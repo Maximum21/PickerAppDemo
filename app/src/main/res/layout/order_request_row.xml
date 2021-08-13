@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:weightSum="4"
+    android:paddingBottom="4dp"
+    android:background="@drawable/undlerline"
+    android:gravity="center"
+    android:layout_marginTop="5dp"
+    android:layout_marginStart="15dp"
+    android:layout_marginEnd="15dp"
+    android:orientation="horizontal"
+    android:layout_height="40dp">
+<TextView
+    android:id="@+id/titleOrder"
+    android:gravity="center_vertical"
+    android:textSize="14sp"
+    android:textColor="@color/black"
+    android:text="Order Title"
+    android:layout_weight="3"
+    android:layout_width="0dp"
+    android:layout_height="40dp"/>
+    <TextView
+        android:id="@+id/acceptTv"
+        android:background="#00cc00"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:text="Accept"
+        android:layout_width="0dp"
+        android:layout_height="40dp"/>
+</LinearLayout>
