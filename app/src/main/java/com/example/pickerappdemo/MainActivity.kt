@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         btnLogin = findViewById<Button>(R.id.loginBtn)
         btnLogin.setOnClickListener {
-            startActivity(Intent(MainActivity@this, ListingActivity::class.java))
+            startActivity(Intent(this, ListingActivity::class.java))
         }
     }
 }

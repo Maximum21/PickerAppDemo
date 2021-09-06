@@ -5,5 +5,6 @@ class Order (
     var orderName:String = "Order Name",
     var orderNumber:String = "order-0023",
     var status:Int = 0,
-    var type:Boolean =false
+    var type:Boolean =false,
+    val product: List<Product> = arrayListOf()
 )

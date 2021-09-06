@@ -1,0 +1,60 @@
+package com.example.pickerappdemo
+
+import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
+import androidx.room.Room
+
+class RoomProductsRepository(val context: Context) {
+
+    private val appDatabase: AppDatabase = Room
+        .databaseBuilder(context, AppDatabase::class.java, Config.DB_NAME)
+        .fallbackToDestructiveMigration()
+        .build()
+
+    fun addToCart(product: Product) {
+
+        InsertCartItem(appDatabase, product).execute()
+    }
+
+
+    fun update(product: Product) {
+        UpdateCartItem(appDatabase, product).execute()
+
+    }
+
+    fun count(): LiveData<Int> {
+        return appDatabase.productItemDao().count()
+    }
+
+    fun exists(productId: Int): LiveData<Boolean> {
+        return appDatabase.productItemDao().exists(productId)
+    }
+    fun getQuantity(productId: Int): LiveData<Int> {
+        return appDatabase.productItemDao().getQuantity(productId)
+    }
+
+    fun delete(product: Product) {
+        DeleteCartItem(appDatabase, product).execute()
+    }
+
+    fun deleteAll() {
+        DeleteAllCartItems(appDatabase).execute()
+    }
+
+    fun cartItem(id: Int): LiveData<Product> {
+        return Transformations.map(
+            appDatabase.productItemDao()[id]
+        ) { cartItemEntity: ProductItemEntity? ->
+            cartItemEntity?.toProduct()
+        }
+    }
+
+//    fun cart(): Product {
+//        return Pro(
+//            items = Transformations.map(appDatabase.cartItemDao().items()) {
+//                i0t.map { cartItemEntity -> cartItemEntity.toCartItem() }
+//            }
+//        )
+//    }
+}
