@@ -1,7 +1,9 @@
-package com.example.pickerappdemo
+package com.example.pickerappdemo.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.example.pickerappdemo.dao.ProductItemDao
+import com.example.pickerappdemo.entities.ProductItemEntity
 
 @Database(
     entities = [

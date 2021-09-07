@@ -1,8 +1,9 @@
-package com.example.pickerappdemo
+package com.example.pickerappdemo.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.pickerappdemo.models.Product
 
 @Entity(tableName = "products")
 data class ProductItemEntity(

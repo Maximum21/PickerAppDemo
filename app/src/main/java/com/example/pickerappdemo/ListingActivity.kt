@@ -2,12 +2,13 @@ package com.example.pickerappdemo
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pickerappdemo.models.Order
+import com.example.pickerappdemo.models.Product
 import segmented_control.widget.custom.android.com.segmentedcontrol.SegmentedControl
 
 class ListingActivity : AppCompatActivity() {
@@ -70,15 +71,15 @@ class ListingActivity : AppCompatActivity() {
         orderCompleteBtn.text = "Start Scanning"
         orderCompleteBtn.visibility = View.GONE
         val list = ArrayList<Any>()
-        list.add(Order(0,"Order 1","order-001",0,true))
-        list.add(Order(0,"Order 2","order-002",0,true))
-        list.add(Order(0,"Order 3","order-003",0,true))
-        list.add(Order(0,"Order 4","order-004",0,true))
-        list.add(Order(0,"Order 5","order-005",0,true))
-        list.add(Order(0,"Order 6","order-006",0,true))
-        list.add(Order(0,"Order 7","order-007",0,true))
-        list.add(Order(0,"Order 8","order-008",0,true))
-        list.add(Order(0,"Order 9","order-009",0,true))
+        list.add(Order("order","Order 1","order-001","0","true"))
+        list.add(Order("order","Order 2","order-002","0","true"))
+        list.add(Order("order","Order 3","order-003","0","true"))
+        list.add(Order("order","Order 4","order-004","0","true"))
+        list.add(Order("order","Order 5","order-005","0","true"))
+        list.add(Order("order","Order 6","order-006","0","true"))
+        list.add(Order("order","Order 7","order-007","0","true"))
+        list.add(Order("order","Order 8","order-008","0","true"))
+        list.add(Order("order","Order 9","order-009","0","true"))
         val adapter = ProductsAdapter(this, list,0)
         rvMain.layoutManager = LinearLayoutManager(this)
         rvMain.adapter = adapter
@@ -88,16 +89,14 @@ class ListingActivity : AppCompatActivity() {
         headerLL.visibility = View.VISIBLE
         orderCompleteBtn.visibility = View.VISIBLE
         val list = ArrayList<Any>()
-        list.add(Product(1,"Product 1",5,false,0))
-        list.add(Product(2,"Product 2",15,false,7))
-        list.add(Product(3,"Product 3",25,false,20))
-        list.add(Product(4,"Product 4",56,false,46))
-        list.add(Product(5,"Product 5",32,false,22))
-        list.add(Product(6,"Product 6",12,false,10))
-        list.add(Product(7,"Product 7",13,false,5))
-        list.add(Product(8,"Product 8",51,false,45))
-        list.add(Product(9,"Product 9",3,false,2))
-        list.add(Product(10,"Product 10",5,false,4))
+        list.add(Product(1,"1","1","Product 1",5  ,"","","",false,0))
+        list.add(Product(1,"1","1","Product 1",5  ,"","","",false,0))
+        list.add(Product(1,"1","1","Product 1",5  ,"","","",false,0))
+        list.add(Product(1,"1","1","Product 1",5  ,"","","",false,0))
+        list.add(Product(1,"1","1","Product 1",5  ,"","","",false,0))
+        list.add(Product(1,"1","1","Product 1",5  ,"","","",false,0))
+        list.add(Product(1,"1","1","Product 1",5  ,"","","",false,0))
+        list.add(Product(1,"1","1","Product 1",5  ,"","","",false,0))
         val adapter = ProductsAdapter(this, list,1)
         rvMain.layoutManager = LinearLayoutManager(this)
         rvMain.adapter = adapter

@@ -4,6 +4,10 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.room.Room
+import com.example.pickerappdemo.database.AppDatabase
+import com.example.pickerappdemo.entities.ProductItemEntity
+import com.example.pickerappdemo.entities.toProduct
+import com.example.pickerappdemo.models.Product
 
 class RoomProductsRepository(val context: Context) {
 

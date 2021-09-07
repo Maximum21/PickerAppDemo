@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pickerappdemo.models.Product
 
 class OrderDetailsActivity : AppCompatActivity() {
     private lateinit var headerLL: LinearLayout
@@ -28,12 +29,12 @@ class OrderDetailsActivity : AppCompatActivity() {
     private fun setSingleProducts() {
         headerLL.visibility = View.VISIBLE
         val list = ArrayList<Any>()
-        list.add(Product("","Product 1",5,false,0))
-        list.add(Product("","Product 2",7,false,7))
-        list.add(Product("","Product 4",7,false,6))
-        list.add(Product("","Product 7",3,false,3))
-        list.add(Product("","Product 9",2,false,2))
-        list.add(Product("","Product 10",2,false,2))
+        list.add(Product(1,"1","1","Product 1",5,"","","",false,0))
+        list.add(Product(2,"2","2","Product 2",7,"","","",false,7))
+        list.add(Product(3,"3","3","Product 4",7,"","","",false,6))
+        list.add(Product(4,"4","4","Product 7",3,"","","",false,3))
+        list.add(Product(5,"5","5","Product 9",2,"","","",false,2))
+        list.add(Product(6,"6","6","Product 10",2,"","","",false,2))
         val adapter = ProductsAdapter(this, list,1)
         rvMain.layoutManager = LinearLayoutManager(this)
         rvMain.adapter = adapter

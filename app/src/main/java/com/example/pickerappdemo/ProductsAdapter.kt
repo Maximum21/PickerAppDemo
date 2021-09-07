@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pickerappdemo.models.Order
+import com.example.pickerappdemo.models.Product
 
 class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType: Int) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -20,7 +22,7 @@ class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType
         fun bind(position: Int) {
             val model = list[position] as Order
             title.text = model.orderName
-            if(model.type){
+            if(model.type?.equals("type") == true){
                 acceptTv.visibility  = View.INVISIBLE
                 itemView.setOnClickListener {
                     context.startActivity(Intent(context, OrderDetailsActivity::class.java))

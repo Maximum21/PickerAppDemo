@@ -1,7 +1,8 @@
-package com.example.pickerappdemo
+package com.example.pickerappdemo.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.pickerappdemo.entities.ProductItemEntity
 
 @Dao
 interface ProductItemDao {

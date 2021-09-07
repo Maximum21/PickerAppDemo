@@ -1,10 +1,13 @@
 package com.example.pickerappdemo
 
 import android.os.AsyncTask
+import com.example.pickerappdemo.database.AppDatabase
+import com.example.pickerappdemo.entities.toProductItemEntity
+import com.example.pickerappdemo.models.Product
 
 class InsertCartItem(
-private val appDatabase: AppDatabase,
-private val product: Product
+    private val appDatabase: AppDatabase,
+    private val product: Product
 ) :
 AsyncTask<Void, Void, Long?>() {
 
