@@ -8,15 +8,18 @@ import com.example.pickerappdemo.models.Order
 @Entity(tableName = "orders")
 data class OrderItemEntitiy (
 
-    @ColumnInfo(name = "orderName")
-    var orderName: String? = null,
+    @ColumnInfo(name = "order_id")
+    var order_id: String? = null,
 
     @PrimaryKey
-    @ColumnInfo(name = "orderNumber")
+    @ColumnInfo(name = "order_number")
     var orderNumber: String? = null,
 
     @ColumnInfo(name = "status")
     var status: String? = null,
+
+    @ColumnInfo(name = "order_total")
+    var order_total: Int = 0,
 
     @ColumnInfo(name = "type")
     var type: String? = null,
@@ -26,18 +29,20 @@ data class OrderItemEntitiy (
     var basketId: String? = null
 )
 
-fun Order.toOrderItemEntitiy() = OrderItemEntitiy(
-    orderName = this.orderName,
+fun Order.toOrderItemEntity() = OrderItemEntitiy(
+    order_id = this.order_id,
     orderNumber = this.orderNumber,
     status = this.status,
+    order_total = this.order_total,
     type = this.type,
     basketId = this.basketId
 )
 
 fun Order.toOrder() = Order(
-    orderName = this.orderName,
+    order_id = this.order_id,
     orderNumber = this.orderNumber,
     status = this.status,
+    order_total = this.order_total,
     type = this.type,
     basketId = this.basketId
 )

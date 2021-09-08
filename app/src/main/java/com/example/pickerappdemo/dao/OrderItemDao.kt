@@ -9,22 +9,22 @@ interface OrderItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(category: OrderItemEntitiy?): Long?
 
-    @Query("SELECT * FROM orders ORDER BY orderNumber asc")
+    @Query("SELECT * FROM orders ORDER BY order_id asc")
     fun fetchAll(): List<OrderItemEntitiy>
 
-    @Query("SELECT * FROM orders ORDER BY orderNumber asc")
+    @Query("SELECT * FROM orders ORDER BY order_id asc")
     fun items(): LiveData<List<OrderItemEntitiy>>
 
     @Query("SELECT COUNT(*) FROM orders")
     fun count(): LiveData<Int>
 
-    @Query("SELECT COUNT(*) FROM orders where orderNumber = :orderNumber")
+    @Query("SELECT COUNT(*) FROM orders where order_number = :orderNumber")
     fun exists(orderNumber: Int): LiveData<Boolean>
 
-    @Query("SELECT Count(OrderNumber) FROM orders where orderNumber = :orderNumber")
+    @Query("SELECT Count(order_number) FROM orders where order_number = :orderNumber")
     fun getQuantity(orderNumber: Int): LiveData<Int>
 
-    @Query("SELECT * FROM orders WHERE orderNumber =:orderNumber")
+    @Query("SELECT * FROM orders WHERE order_number =:orderNumber")
     operator fun get(orderNumber: Int): LiveData<OrderItemEntitiy>
 
     @Update
