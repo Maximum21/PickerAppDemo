@@ -1,0 +1,13 @@
+package com.woocom.utils
+
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+object Converter {
+
+    fun getDateString(date: Date): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault())
+        return sdf.format(date)
+    }
+}
