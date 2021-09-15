@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PickerAppDemo</string>
+    <string name="app_name">picker</string>
 
     /// local
     <string name="prefs">MyCache</string>
