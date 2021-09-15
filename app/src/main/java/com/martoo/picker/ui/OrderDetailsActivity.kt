@@ -1,4 +1,4 @@
-package com.martoo.picker.main
+package com.martoo.picker.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.martoo.picker.ListingView
+import com.martoo.picker.interfaces.ListingView
 import com.martoo.picker.ProductsAdapter
 import com.martoo.picker.R
 import com.martoo.picker.models.Product

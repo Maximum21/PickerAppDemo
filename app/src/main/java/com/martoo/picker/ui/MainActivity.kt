@@ -1,4 +1,4 @@
-package com.martoo.picker.main
+package com.martoo.picker.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

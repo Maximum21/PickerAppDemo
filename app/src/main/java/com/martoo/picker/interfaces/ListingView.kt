@@ -1,4 +1,4 @@
-package com.martoo.picker
+package com.martoo.picker.interfaces
 
 import com.woocom.models.MyOrder
 

@@ -8,9 +8,10 @@ object Config {
 
 
     var cart = "$siteUrl/wp-json/cocart/v1/"
+    private const val auth = "wp-json/jwt-auth/v1"
 
     var consumerKey = BuildConfig.CONSUMER_KEY
     var consumerSecret = BuildConfig.CONSUMER_SECRET
 
-    var access_key = BuildConfig.ACCESS_KEY
+    val login: String = "$siteUrl$auth/token"
 }

@@ -1,7 +1,14 @@
+
 <resources>
     <string name="app_name">picker</string>
 
     /// local
-    <string name="prefs">MyCache</string>
+    <string name="prefs">Cache</string>
     <string name="prefs_email">MyCacheEmail</string>
+    <string name="network_issue">Network Issue</string>
+
+    <string name="label_sign_in">Sign in</string>
+    <string name="email_label">User Name or Email</string>
+    <string name="password_label">Password</string>
+
 </resources>
