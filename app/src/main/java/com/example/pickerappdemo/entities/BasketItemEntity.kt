@@ -1,5 +1,6 @@
 package com.example.pickerappdemo.entities
 
+import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,9 +11,10 @@ data class BasketItemEntity (
     @ColumnInfo(name = "basket_id")
     var id: Int = 0,
 
+    @NonNull
     @PrimaryKey
     @ColumnInfo(name = "basket_code")
-    var basket_code: String? = null
+    var basket_code: String
 )
 
 fun Basket.toBasketItemEntity()  = BasketItemEntity(

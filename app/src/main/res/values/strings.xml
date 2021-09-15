@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PickerAppDemo</string>
+
+    /// local
+    <string name="prefs">MyCache</string>
+    <string name="prefs_email">MyCacheEmail</string>
 </resources>

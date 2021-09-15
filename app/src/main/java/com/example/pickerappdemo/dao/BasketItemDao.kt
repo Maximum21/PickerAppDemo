@@ -8,10 +8,10 @@ import com.example.pickerappdemo.entities.OrderItemEntitiy
 @Dao
 interface BasketItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(category: BasketItemEntity?): Long?
+    fun insert(category: BasketItemEntity?)
 
     @Query("SELECT * FROM baskets ORDER BY basket_id asc")
-    fun fetchAll(): List<OrderItemEntitiy>
+    fun fetchAll(): List<BasketItemEntity>
 
 //    @Query("SELECT * FROM baskets ORDER BY orderNumber asc")
 //    fun items(): LiveData<List<OrderItemEntitiy>>

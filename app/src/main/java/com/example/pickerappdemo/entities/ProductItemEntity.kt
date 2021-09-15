@@ -1,12 +1,23 @@
 package com.example.pickerappdemo.entities
 
+import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
 import com.example.pickerappdemo.models.Product
 
-@Entity(tableName = "products")
+@Entity(tableName = "products",
+    foreignKeys = [ForeignKey(
+        entity = OrderItemEntitiy::class,
+        parentColumns = arrayOf("order_number"),
+        childColumns = arrayOf("orderId"),
+        onDelete = CASCADE
+    )])
+
 data class ProductItemEntity(
+    @NonNull
     @PrimaryKey(autoGenerate = true)
     var id: Int?,
 

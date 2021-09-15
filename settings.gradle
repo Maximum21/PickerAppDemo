@@ -8,5 +8,5 @@ dependencyResolutionManagement {
         jcenter() // Warning: this repository is going to shut down soon
     }
 }
+include ':app', ':wooco'
 rootProject.name = "PickerAppDemo"
-include ':app'

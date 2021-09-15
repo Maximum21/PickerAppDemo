@@ -7,7 +7,7 @@ import com.example.pickerappdemo.entities.OrderItemEntitiy
 @Dao
 interface OrderItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(category: OrderItemEntitiy?): Long?
+    fun insert(category: OrderItemEntitiy?)
 
     @Query("SELECT * FROM orders ORDER BY order_id asc")
     fun fetchAll(): List<OrderItemEntitiy>

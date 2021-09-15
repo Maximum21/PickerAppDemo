@@ -1,24 +1,32 @@
-package com.example.pickerappdemo
+package com.example.pickerappdemo.repo
 
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.room.Room
+import com.example.pickerappdemo.*
 import com.example.pickerappdemo.database.AppDatabase
 import com.example.pickerappdemo.entities.ProductItemEntity
+import com.example.pickerappdemo.entities.toOrder
 import com.example.pickerappdemo.entities.toProduct
+import com.example.pickerappdemo.entities.toProductItemEntity
+import com.example.pickerappdemo.models.Order
 import com.example.pickerappdemo.models.Product
 
-class RoomProductsRepository(val context: Context) {
+class RoomOrdersRepository(val context: Context) {
 
     private val appDatabase: AppDatabase = Room
         .databaseBuilder(context, AppDatabase::class.java, Config.DB_NAME)
         .fallbackToDestructiveMigration()
         .build()
 
-    fun addToCart(product: Product) {
+    fun addOrderToDb(order: Order) {
 
-        InsertCartItem(appDatabase, product).execute()
+        InsertOrder(appDatabase, order).execute()
+    }
+
+    fun addProductsToDb(products: List<Product>){
+        InsertProducts(appDatabase, products.map { it.toProductItemEntity() }).execute()
     }
 
 
@@ -54,11 +62,9 @@ class RoomProductsRepository(val context: Context) {
         }
     }
 
-//    fun cart(): Product {
-//        return Pro(
-//            items = Transformations.map(appDatabase.cartItemDao().items()) {
-//                i0t.map { cartItemEntity -> cartItemEntity.toCartItem() }
-//            }
-//        )
-//    }
+    fun orders(): LiveData<List<Order>> {
+        return Transformations.map(appDatabase.orderItemDao().items()) {
+                it.map { orderItemEntity -> orderItemEntity.toOrder() }
+            }
+    }
 }

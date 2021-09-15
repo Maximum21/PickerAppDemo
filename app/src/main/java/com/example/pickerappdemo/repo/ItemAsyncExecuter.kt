@@ -1,20 +1,37 @@
-package com.example.pickerappdemo
+package com.example.pickerappdemo.repo
 
 import android.os.AsyncTask
 import com.example.pickerappdemo.database.AppDatabase
+import com.example.pickerappdemo.entities.ProductItemEntity
+import com.example.pickerappdemo.entities.toOrderItemEntity
 import com.example.pickerappdemo.entities.toProductItemEntity
+import com.example.pickerappdemo.models.Order
 import com.example.pickerappdemo.models.Product
 
-class InsertCartItem(
+class InsertOrder(
     private val appDatabase: AppDatabase,
-    private val product: Product
+    private val order: Order
 ) :
 AsyncTask<Void, Void, Long?>() {
 
     override fun doInBackground(vararg voids: Void): Long? {
+        appDatabase.orderItemDao()
+            .insert(order.toOrderItemEntity())
+        return 1
+    }
+}
 
-        return appDatabase.productItemDao()
-            .insert(product.toProductItemEntity())
+
+class InsertProducts(
+    private val appDatabase: AppDatabase,
+    private val products: List<ProductItemEntity>
+) :
+AsyncTask<Void, Void, Long?>() {
+
+    override fun doInBackground(vararg voids: Void): Long? {
+        appDatabase.productItemDao()
+            .insert(products)
+        return 1
     }
 }
 

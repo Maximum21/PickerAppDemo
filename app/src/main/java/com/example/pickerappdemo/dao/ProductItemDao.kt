@@ -7,10 +7,13 @@ import com.example.pickerappdemo.entities.ProductItemEntity
 @Dao
 interface ProductItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(category: ProductItemEntity?): Long?
+    fun insert(category: ProductItemEntity?)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(category: List<ProductItemEntity>)
 
     @Query("SELECT * FROM products ORDER BY id asc")
-    fun fetchAll(): List<ProductItemEntity>
+    fun fetchAll(): LiveData<List<ProductItemEntity>>
 
     @Query("SELECT * FROM products ORDER BY orderId asc")
     fun items(): LiveData<List<ProductItemEntity>>

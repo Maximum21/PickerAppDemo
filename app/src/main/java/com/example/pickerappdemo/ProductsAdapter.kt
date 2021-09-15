@@ -9,8 +9,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pickerappdemo.models.Order
 import com.example.pickerappdemo.models.Product
+import com.woocom.models.MyOrder
 
-class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType: Int) :
+class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType: Int,val view: ListingView) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
@@ -20,15 +21,10 @@ class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType
         var title: TextView = itemView.findViewById(R.id.titleOrder)
         var acceptTv: TextView = itemView.findViewById(R.id.acceptTv)
         fun bind(position: Int) {
-            val model = list[position] as Order
-            title.text = model.orderName
-            if(model.type?.equals("type") == true){
-                acceptTv.visibility  = View.INVISIBLE
-                itemView.setOnClickListener {
-                    context.startActivity(Intent(context, OrderDetailsActivity::class.java))
-                }
-            }else{
-                acceptTv.visibility  = View.VISIBLE
+            val model = list[position] as MyOrder
+            title.text = model.orderNumber
+            acceptTv.setOnClickListener {
+                view.onAccept(model)
             }
         }
     }

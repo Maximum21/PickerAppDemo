@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ListingActivity">
+    tools:context=".main.ListingActivity">
     <segmented_control.widget.custom.android.com.segmentedcontrol.SegmentedControl
         android:id="@+id/segmented_control"
         app:layout_constraintTop_toTopOf="parent"
