@@ -7,4 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="textViewColor">#484848</color>
+
+
+    <color name="editTextColor">#484848</color>
+    <color name="button_color">#EC0202</color>
+    <color name="shiping_text_color">#8a898e</color>
+    <color name="cyan">#97C11F</color>
+
 </resources>

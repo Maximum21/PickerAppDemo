@@ -4,8 +4,8 @@
 4
 5    <uses-sdk
 6        android:minSdkVersion="19"
-6-->D:\Aneeq\work\amazonfood\picker\wooco\src\main\AndroidManifest.xml
+6-->D:\Aneeq\work\amazonfood\PickerAppDemo\wooco\src\main\AndroidManifest.xml
 7        android:targetSdkVersion="30" />
-7-->D:\Aneeq\work\amazonfood\picker\wooco\src\main\AndroidManifest.xml
+7-->D:\Aneeq\work\amazonfood\PickerAppDemo\wooco\src\main\AndroidManifest.xml
 8
 9</manifest>

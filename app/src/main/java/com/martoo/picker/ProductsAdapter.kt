@@ -1,13 +1,12 @@
 package com.martoo.picker
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.martoo.picker.models.Order
+import com.martoo.picker.interfaces.ListingView
 import com.martoo.picker.models.Product
 import com.woocom.models.MyOrder
 
