@@ -1,8 +1,11 @@
 package com.martoo.picker.main
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.ContentInfo
+import android.view.ContextMenu
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -23,12 +26,14 @@ import java.lang.Exception
 
 class ListingActivity : AppCompatActivity(),
     ListingView {
+    private var recentCode: String = ""
     private lateinit var woocommerce: Woocommerce
     private lateinit var orderCompleteBtn: Button
     private lateinit var headerLL: LinearLayout
     private lateinit var rvMain: RecyclerView
     private lateinit var segmentedControl: SegmentedControl<*>
-
+    private var attachBasket = false
+    private var scanning = false
     var segmentSelected = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,18 +44,22 @@ class ListingActivity : AppCompatActivity(),
         orderCompleteBtn = findViewById<Button>(R.id.orderCompleteBtn)
         segmentedControl = findViewById<SegmentedControl<*>>(R.id.segmented_control)
         segmentedControl.addOnSegmentSelectListener { segmentViewHolder, isSelected, isReselected ->
-            if (isSelected) {
+            if (isSelected && segmentViewHolder.absolutePosition!=segmentSelected) {
                 when(segmentViewHolder.absolutePosition){
                     0->{
+                        scanning=false
                         segmentSelected=0
                         setView(-1)
                     }
                     1->{
+                        scanning=false
                         segmentSelected=1
+                        setOrdersFromDb()
                         setView(1)
                     }
                     2->{
-                        setProducts()
+                        segmentSelected=2
+                        setProducts(this)
                     }
                 }
             }
@@ -58,7 +67,9 @@ class ListingActivity : AppCompatActivity(),
         orderCompleteBtn.setOnClickListener {
             if(orderCompleteBtn.text.toString().toLowerCase() == "start scanning"){
                 orderCompleteBtn.text = "Stop Scanning"
+                scanning=true
             }else{
+                scanning=false
                 orderCompleteBtn.text = "Start Scanning"
             }
         }
@@ -74,14 +85,18 @@ class ListingActivity : AppCompatActivity(),
         rvMain.adapter = adapter
     }
 
-    private fun setOrders(list: List<Any>) {
+    private fun setOrdersFromDb() {
         Utility.getOrders(this@ListingActivity).observe(this,{myOrders->
             myOrders?.let{
                 if(it.isNotEmpty()){
+                    val listing = ArrayList<Any>()
+                    for(temp in  it){
+                        listing.add(temp)
+                    }
                     headerLL.visibility = View.GONE
                     orderCompleteBtn.text = "Start Scanning"
                     orderCompleteBtn.visibility = View.GONE
-                    val adapter = ProductsAdapter(this, it as ArrayList<Any>,0,this@ListingActivity)
+                    val adapter = ProductsAdapter(this, listing,2,this@ListingActivity)
                     rvMain.layoutManager = LinearLayoutManager(this)
                     rvMain.adapter = adapter
                 }
@@ -89,16 +104,28 @@ class ListingActivity : AppCompatActivity(),
         })
     }
 
-    private fun setProducts() {
-        headerLL.visibility = View.VISIBLE
-        orderCompleteBtn.visibility = View.VISIBLE
-//        val adapter = ProductsAdapter(this, list,1)
-//        rvMain.layoutManager = LinearLayoutManager(this)
-//        rvMain.adapter = adapter
+    private fun setProducts(context: Context) {
+        Utility.getProducts(context).observe(this,{ productsList->
+            productsList?.let{products->
+                if(products.isNotEmpty()){
+                    val listing = ArrayList<Any>()
+                    for(temp in  products){
+                        listing.add(temp)
+                    }
+                    headerLL.visibility = View.VISIBLE
+                    orderCompleteBtn.text = "Start Scanning"
+                    orderCompleteBtn.visibility = View.VISIBLE
+                    val adapter = ProductsAdapter(this, listing,1,this@ListingActivity)
+                    rvMain.layoutManager = LinearLayoutManager(this)
+                    rvMain.adapter = adapter
+                }
+            }
+        })
     }
 
-    public fun getOrders(){
-
+    fun checkBarCode(barcode: String,orderNumber:Int){
+        recentCode=barcode
+        Utility.checkBarCode(recentCode,orderNumber)
     }
 
     fun getWooCommerce(): Woocommerce {
@@ -136,7 +163,7 @@ class ListingActivity : AppCompatActivity(),
                                 setRequest(response.body()!!)
                             }
                             1->{
-                                setOrders(response.body()!!)
+                                setOrders(this@ListingActivity,response.body()!!)
                             }
                         }
 
@@ -153,8 +180,16 @@ class ListingActivity : AppCompatActivity(),
 
     }
 
+    private fun setOrders(context: Context, list: List<MyOrder>) {
+        Utility.addOrders(context,list)
+    }
+
     override fun onAccept(order: MyOrder) {
         updateOrder(order)
+    }
+
+    override fun AttachBasket(model: com.martoo.picker.models.Order) {
+
     }
 
     private fun updateOrder(orderTemp: MyOrder) {

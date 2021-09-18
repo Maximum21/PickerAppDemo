@@ -16,25 +16,25 @@
         android:textSize="14sp"
         android:textColor="@color/black"
         android:text="Product Name"
-        android:layout_weight="1"
+        android:layout_weight="1.8"
         android:layout_width="0dp"
         android:layout_height="40dp"/>
     <TextView
         android:id="@+id/productQty"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:textSize="14sp"
         android:textColor="@color/black"
         android:text="Quantity"
-        android:layout_weight="1"
+        android:layout_weight=".6"
         android:layout_width="0dp"
         android:layout_height="40dp"/>
     <TextView
         android:id="@+id/productRem"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:textSize="14sp"
         android:textColor="@color/black"
         android:text="Remaining"
-        android:layout_weight="1"
+        android:layout_weight=".6"
         android:layout_width="0dp"
         android:layout_height="40dp"/>
 </LinearLayout>

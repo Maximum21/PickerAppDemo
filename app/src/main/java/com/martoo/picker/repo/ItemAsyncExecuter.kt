@@ -2,6 +2,7 @@ package com.martoo.picker.repo
 
 import android.os.AsyncTask
 import com.martoo.picker.database.AppDatabase
+import com.martoo.picker.entities.OrderItemEntitiy
 import com.martoo.picker.entities.ProductItemEntity
 import com.martoo.picker.entities.toOrderItemEntity
 import com.martoo.picker.entities.toProductItemEntity
@@ -17,6 +18,19 @@ AsyncTask<Void, Void, Long?>() {
     override fun doInBackground(vararg voids: Void): Long? {
         appDatabase.orderItemDao()
             .insert(order.toOrderItemEntity())
+        return 1
+    }
+}
+
+class InsertOrders(
+    private val appDatabase: AppDatabase,
+    private val orders: List<OrderItemEntitiy>
+) :
+AsyncTask<Void, Void, Long?>() {
+
+    override fun doInBackground(vararg voids: Void): Long? {
+        appDatabase.orderItemDao()
+            .insert(orders)
         return 1
     }
 }

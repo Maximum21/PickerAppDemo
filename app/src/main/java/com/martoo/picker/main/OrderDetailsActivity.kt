@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.martoo.picker.ListingView
 import com.martoo.picker.ProductsAdapter
 import com.martoo.picker.R
+import com.martoo.picker.models.Order
 import com.martoo.picker.models.Product
 import com.woocom.models.MyOrder
 
@@ -46,6 +47,10 @@ class OrderDetailsActivity : AppCompatActivity(),
     }
 
     override fun onAccept(order: MyOrder) {
+
+    }
+
+    override fun AttachBasket(model: Order) {
 
     }
 }

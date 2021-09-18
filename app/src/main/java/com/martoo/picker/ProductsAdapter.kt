@@ -29,7 +29,7 @@ class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType
         }
     }
 
-    private inner class View2ViewHolder(itemView: View) :
+    private inner class ViewViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
         var title: TextView = itemView.findViewById(R.id.productName)
         var qty: TextView = itemView.findViewById(R.id.productQty)
@@ -42,13 +42,31 @@ class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType
         }
     }
 
+    private inner class View2ViewHolder(itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
+        var title: TextView = itemView.findViewById(R.id.titleOrder)
+        var acceptTv: TextView = itemView.findViewById(R.id.acceptTv)
+        fun bind(position: Int) {
+            val model = list[position] as Order
+            title.text = model.orderNumber
+            acceptTv.text = "Attach Basket"
+            acceptTv.setOnClickListener {
+                view.AttachBasket(model)
+            }
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == 0) {
             return View1ViewHolder(
                 LayoutInflater.from(context).inflate(R.layout.order_request_row, parent, false)
             )
+        }else if(viewType==2){
+            return View2ViewHolder(
+                LayoutInflater.from(context).inflate(R.layout.order_request_row, parent, false)
+            )
         }
-        return View2ViewHolder(
+        return ViewViewHolder(
             LayoutInflater.from(context).inflate(R.layout.products_list_row, parent, false)
         )
     }
@@ -58,10 +76,16 @@ class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (viewType == 0) {
-            (holder as View1ViewHolder).bind(position)
-        } else {
-            (holder as View2ViewHolder).bind(position)
+        when (viewType) {
+            0 -> {
+                (holder as View1ViewHolder).bind(position)
+            }
+            2 -> {
+                (holder as View2ViewHolder).bind(position)
+            }
+            else -> {
+                (holder as ViewViewHolder).bind(position)
+            }
         }
     }
 

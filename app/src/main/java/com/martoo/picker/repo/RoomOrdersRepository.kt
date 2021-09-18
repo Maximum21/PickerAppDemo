@@ -6,12 +6,11 @@ import androidx.lifecycle.Transformations
 import androidx.room.Room
 import com.martoo.picker.*
 import com.martoo.picker.database.AppDatabase
-import com.martoo.picker.entities.ProductItemEntity
-import com.martoo.picker.entities.toOrder
-import com.martoo.picker.entities.toProduct
-import com.martoo.picker.entities.toProductItemEntity
+import com.martoo.picker.entities.*
 import com.martoo.picker.models.Order
 import com.martoo.picker.models.Product
+import java.util.*
+import java.util.logging.Handler
 
 class RoomOrdersRepository(val context: Context) {
 
@@ -23,6 +22,10 @@ class RoomOrdersRepository(val context: Context) {
     fun addOrderToDb(order: Order) {
 
         InsertOrder(appDatabase, order).execute()
+    }
+    fun addOrdersToDb(context: Context, orders: List<Order>) {
+
+        (InsertOrders(appDatabase, orders.map { order -> order.toOrderItemEntity() }).execute())
     }
 
     fun addProductsToDb(products: List<Product>){
@@ -54,11 +57,17 @@ class RoomOrdersRepository(val context: Context) {
         DeleteAllCartItems(appDatabase).execute()
     }
 
-    fun cartItem(id: Int): LiveData<Product> {
+    fun products(id: Int): LiveData<Product> {
         return Transformations.map(
             appDatabase.productItemDao()[id]
         ) { cartItemEntity: ProductItemEntity? ->
             cartItemEntity?.toProduct()
+        }
+    }
+    fun products(): LiveData<List<Product>> {
+        return Transformations.map(
+            appDatabase.productItemDao().items()
+        ) { it.map { productItemEntity -> productItemEntity.toProduct() }
         }
     }
 

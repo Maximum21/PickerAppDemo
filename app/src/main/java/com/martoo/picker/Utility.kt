@@ -37,6 +37,7 @@ object Utility {
                     product.productCode = tempProduct.barcode
                     product.product_sku = tempProduct.sku
                     product.quantity = tempProduct.quantity
+                    product.remaining = tempProduct.quantity
                     return@map product
                 })
             }
@@ -57,5 +58,35 @@ object Utility {
 
     fun getOrders(context: Context): LiveData<List<Order>> {
        return RoomOrdersRepository(context).orders()
+    }
+    fun getProducts(context: Context): LiveData<List<Product>> {
+       return RoomOrdersRepository(context).products()
+    }
+
+    fun addOrders(context: Context, list: List<MyOrder>) {
+        try {
+            val repository = RoomOrdersRepository(context)
+            for(order in list){
+                val item: Order = convertToOrder(order)
+                repository.addOrderToDb(item)
+                repository.addProductsToDb(order.lineItems.map {tempProduct->
+                    val product = Product()
+                    product.orderId = order.orderNumber
+                    product.productId = tempProduct.productId.toString()
+                    product.name = tempProduct.name
+                    product.productCode = tempProduct.barcode
+                    product.product_sku = tempProduct.sku
+                    product.quantity = tempProduct.quantity
+                    product.remaining = tempProduct.quantity
+                    return@map product
+                })
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun checkBarCode(recentCode: String, orderNumber: Int) {
+
     }
 }

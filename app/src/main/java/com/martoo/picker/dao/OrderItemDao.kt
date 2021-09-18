@@ -3,11 +3,16 @@ package com.martoo.picker.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.martoo.picker.entities.OrderItemEntitiy
+import io.reactivex.Flowable
 
 @Dao
 interface OrderItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(category: OrderItemEntitiy?)
+    fun insert(category: OrderItemEntitiy)
+
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insert(category: List<OrderItemEntitiy>)
 
     @Query("SELECT * FROM orders ORDER BY order_id asc")
     fun fetchAll(): List<OrderItemEntitiy>

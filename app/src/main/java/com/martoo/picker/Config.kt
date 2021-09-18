@@ -12,5 +12,4 @@ object Config {
     var consumerKey = BuildConfig.CONSUMER_KEY
     var consumerSecret = BuildConfig.CONSUMER_SECRET
 
-    var access_key = BuildConfig.ACCESS_KEY
 }
