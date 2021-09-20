@@ -12,4 +12,6 @@ object Config {
     var consumerKey = BuildConfig.CONSUMER_KEY
     var consumerSecret = BuildConfig.CONSUMER_SECRET
 
+    private const val auth = "/wp-json/jwt-auth/v1"
+    val login: String = "$siteUrl$auth/token"
 }

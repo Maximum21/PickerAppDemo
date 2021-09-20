@@ -1,17 +1,15 @@
-package com.martoo.picker.main
+package com.martoo.picker.ui
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.ContentInfo
-import android.view.ContextMenu
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.martoo.picker.*
+import com.martoo.picker.interfaces.ListingView
 import com.woocom.Woocommerce
 import com.woocom.Woocommerce.Companion.API_V3
 import com.woocom.models.Metadata
@@ -190,6 +188,10 @@ class ListingActivity : AppCompatActivity(),
 
     override fun AttachBasket(model: com.martoo.picker.models.Order) {
 
+    }
+
+    override fun openOrderDetails(id: String) {
+        
     }
 
     private fun updateOrder(orderTemp: MyOrder) {

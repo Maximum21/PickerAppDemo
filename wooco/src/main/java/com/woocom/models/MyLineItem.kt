@@ -7,26 +7,26 @@ import java.util.ArrayList
 
 class MyLineItem {
 
-    lateinit var subtotal: String
+    var subtotal: String? = null
 
     @SerializedName("subtotal_tax")
-    lateinit var subtotalTax: String
-    lateinit var total: String
-    lateinit var totalTax: String
-    lateinit var price: String
+    var subtotalTax: String? = null
+    var total: String? = null
+    var totalTax: String? = null
+    var price: String? = null
     var quantity: Int = 0
-    lateinit var taxClass: Any
-    lateinit var name: String
+    var taxClass: Any? = null
+    var name: String? = null
 
     @SerializedName("product_id")
     var productId: Int = 0
 
-    lateinit var sku: String
-    lateinit var variations: String
-    lateinit var barcode: String
+    var sku: String? = null
+    var variations: String? = null
+    var barcode: String? = null
 
-    lateinit var image_url: String
-    lateinit var points: Any
+    var image_url: String? = null
+    var points: Any? = null
 //    var units: List<Any> = ArrayList()
 }
 

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.martoo.picker.interfaces.ListingView
+import com.martoo.picker.models.Order
 import com.martoo.picker.models.Product
 import com.woocom.models.MyOrder
 
@@ -24,6 +25,10 @@ class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType
             title.text = model.orderNumber
             acceptTv.setOnClickListener {
                 view.onAccept(model)
+            }
+
+            itemView.setOnClickListener{
+                view.openOrderDetails(model.orderNumber)
             }
         }
     }

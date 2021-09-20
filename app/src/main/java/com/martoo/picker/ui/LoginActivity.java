@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                         }.getType());
                         Toast.makeText(context, "Successfully login !", Toast.LENGTH_SHORT).show();
                         addToSharePreferences(context, user);
-                        startActivity(new Intent(context, MainActivity.class));
+                        startActivity(new Intent(context, ListingActivity.class));
                         finish();
                     } else {
                         Toast.makeText(context, "Not Valid", Toast.LENGTH_SHORT).show();
