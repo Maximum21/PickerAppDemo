@@ -10,23 +10,11 @@ interface BasketItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(category: BasketItemEntity?)
 
-    @Query("SELECT * FROM baskets ORDER BY basket_id asc")
+    @Query("SELECT * FROM baskets ORDER BY basket_code asc")
     fun fetchAll(): List<BasketItemEntity>
 
-//    @Query("SELECT * FROM baskets ORDER BY orderNumber asc")
-//    fun items(): LiveData<List<OrderItemEntitiy>>
-//
-//    @Query("SELECT COUNT(*) FROM baskets")
-//    fun count(): LiveData<Int>
-//
-//    @Query("SELECT COUNT(*) FROM baskets where basket_code = :basket_code")
-//    fun exists(basket_code: String): LiveData<Boolean>
-//
-//    @Query("SELECT Count(OrderNumber) FROM baskets where orderNumber = :orderNumber")
-//    fun getQuantity(orderNumber: Int): LiveData<Int>
-//
-//    @Query("SELECT * FROM baskets WHERE orderNumber =:orderNumber")
-//    operator fun get(orderNumber: Int): LiveData<BasketItemEntity>
+    @Query("SELECT * FROM baskets where basket_code = :barcode ORDER BY order_id asc")
+    fun itemsWithBasket(barcode:String): LiveData<List<BasketItemEntity>>
 
     @Update
     fun update(category: BasketItemEntity?)
@@ -36,4 +24,10 @@ interface BasketItemDao {
 
     @Query("DELETE FROM baskets")
     fun deleteAll()
+
+    @Query("SELECT * FROM baskets where basket_code = :code ORDER BY order_id asc")
+    fun checkBasketInOrders(code: String): LiveData<List<BasketItemEntity>>
+
+    @Query("SELECT * FROM baskets where basket_code = :code AND order_id = :orderId ORDER BY order_id asc")
+    fun checkBasketInOrders(code: String,orderId: String): LiveData<List<BasketItemEntity>>
 }

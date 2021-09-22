@@ -12,11 +12,16 @@ interface ProductItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(category: List<ProductItemEntity>)
 
-    @Query("SELECT * FROM products ORDER BY id asc")
+    @Query("SELECT * FROM products ORDER BY productId asc")
     fun fetchAll(): LiveData<List<ProductItemEntity>>
 
     @Query("SELECT * FROM products ORDER BY orderId asc")
     fun items(): LiveData<List<ProductItemEntity>>
+
+    @Query("SELECT * FROM products where orderId = :id ORDER BY orderId asc")
+    fun items(id: String): LiveData<List<ProductItemEntity>>
+
+
 
     @Query("SELECT COUNT(*) FROM products")
     fun count(): LiveData<Int>
@@ -27,15 +32,21 @@ interface ProductItemDao {
     @Query("SELECT quantity FROM products where productId = :productId")
     fun getQuantity(productId: Int): LiveData<Int>
 
-    @Query("SELECT * FROM products WHERE id =:id")
+    @Query("SELECT * FROM products WHERE productId =:id")
     operator fun get(id: Int): LiveData<ProductItemEntity>
 
     @Update
-    fun update(category: ProductItemEntity?)
+    fun update(product: ProductItemEntity?)
 
     @Delete
-    fun delete(category: ProductItemEntity?)
+    fun delete(product: ProductItemEntity?)
 
     @Query("DELETE FROM products")
     fun deleteAll()
+
+    @Query("SELECT * FROM products where productCode = :code AND remaining < quantity ORDER BY productId asc")
+    fun checkProductRequired(code: String): LiveData<List<ProductItemEntity>>
+
+    @Query("SELECT * FROM products where productCode = :code AND orderId = :orderId AND remaining < quantity ORDER BY productId asc")
+    fun checkProductRequired(code: String,orderId:String): LiveData<List<ProductItemEntity>>
 }

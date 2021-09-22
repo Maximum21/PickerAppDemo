@@ -2,6 +2,7 @@ package com.martoo.picker.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.martoo.picker.entities.BasketItemEntity
 import com.martoo.picker.entities.OrderItemEntitiy
 import io.reactivex.Flowable
 
@@ -19,6 +20,11 @@ interface OrderItemDao {
 
     @Query("SELECT * FROM orders ORDER BY order_id asc")
     fun items(): LiveData<List<OrderItemEntitiy>>
+
+    @Query("SELECT o.*, (SELECT Count(p.orderId) From products WHERE p.quantity < p.remaining AND o.order_id = p.orderId) as completed FROM orders o ,products p ORDER BY order_id asc")
+    fun itemss(): LiveData<List<Any>>
+
+
 
     @Query("SELECT COUNT(*) FROM orders")
     fun count(): LiveData<Int>

@@ -28,7 +28,9 @@ data class OrderItemEntitiy (
 
 
     @ColumnInfo(name = "basketId")
-    var basketId: String? = null
+    var basketId: String? = null,
+
+    var completed: Int
 )
 
 fun Order.toOrderItemEntity() = OrderItemEntitiy(

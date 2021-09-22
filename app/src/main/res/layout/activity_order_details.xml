@@ -72,7 +72,85 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:id="@+id/orderCompleteBtn"
-        android:text="Order Completed / Start Scanning"
+        android:text="Start Scanning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <androidx.constraintlayout.widget.Group
+        android:visibility="gone"
+        android:background="@drawable/action_dialog_bg"
+        app:constraint_referenced_ids="actionDialogHeadingEtv,actionDialogHeadingTv,
+        actionDialogScannedBtn,bottomDivider,actionDialogClose"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:id="@+id/actionDialog"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/bottomDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/actionDialogHeadingTv" />
+
+    <TextView
+        android:layout_margin="20dp"
+        android:paddingTop="20dp"
+        android:id="@+id/actionDialogHeadingTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20sp"
+        android:text="Scan Basket QR Code"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/actionDialogHeadingEtv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <EditText
+        android:gravity="center"
+        android:id="@+id/actionDialogHeadingEtv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        android:background="@drawable/edittextbg"
+        android:hint="Enter QR Scanner Code"
+        android:textColor="@color/black"
+        android:textColorHint="#aaaaaa"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/actionDialogScannedBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/actionDialogHeadingTv" />
+
+    <Button
+        android:id="@+id/actionDialogScannedBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:padding="10dp"
+        android:text="Start Scanning"
+        app:layout_constraintTop_toBottomOf="@+id/actionDialogHeadingEtv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottomDivider" />
+    <ImageView
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/actionDialogScannedBtn"
+        android:id="@+id/bottomDivider"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"/>
+
+    <ImageView
+        android:layout_margin="15dp"
+        app:layout_constraintTop_toTopOf="@+id/actionDialog"
+        app:layout_constraintEnd_toEndOf="@+id/actionDialog"
+        android:src="@drawable/ic_action_cross_black"
+        android:id="@+id/actionDialogClose"
+        android:layout_width="25dp"
+        android:layout_height="25dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

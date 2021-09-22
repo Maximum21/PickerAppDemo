@@ -10,5 +10,6 @@
     <string name="label_sign_in">Sign in</string>
     <string name="email_label">User Name or Email</string>
     <string name="password_label">Password</string>
+    <string name="login_permission_message">Sorry,  you don\'t have permissions to login.</string>
 
 </resources>

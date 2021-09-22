@@ -20,5 +20,5 @@ import com.martoo.picker.entities.ProductItemEntity
 abstract class AppDatabase : RoomDatabase() {
     abstract fun productItemDao(): ProductItemDao
     abstract fun orderItemDao(): OrderItemDao
-    abstract fun BasketItemDao(): BasketItemDao
+    abstract fun basketItemDao(): BasketItemDao
 }

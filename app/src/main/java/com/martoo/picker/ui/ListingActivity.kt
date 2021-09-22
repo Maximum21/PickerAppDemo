@@ -1,15 +1,18 @@
 package com.martoo.picker.ui
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
+import android.widget.*
+import androidx.constraintlayout.widget.Group
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.martoo.picker.*
+import com.martoo.picker.entities.toProductItemEntity
 import com.martoo.picker.interfaces.ListingView
+import com.martoo.picker.models.Product
 import com.woocom.Woocommerce
 import com.woocom.Woocommerce.Companion.API_V3
 import com.woocom.models.Metadata
@@ -21,28 +24,49 @@ import retrofit2.Callback
 import retrofit2.Response
 import segmented_control.widget.custom.android.com.segmentedcontrol.SegmentedControl
 import java.lang.Exception
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ListingActivity : AppCompatActivity(),
     ListingView {
+    private lateinit var progressView: RelativeLayout
+    private var recentProductCode: String = ""
+    private var recentsProductsList: List<Product> = arrayListOf()
+    private var orderCurrent: com.martoo.picker.models.Order? = null
+    private var scanningProcess: Int = 0
+    var productScanned = false
     private var recentCode: String = ""
     private lateinit var woocommerce: Woocommerce
     private lateinit var orderCompleteBtn: Button
     private lateinit var headerLL: LinearLayout
     private lateinit var rvMain: RecyclerView
+    private lateinit var actionDialog: Group
+    private lateinit var actionDialogClose: ImageView
+    private lateinit var actionDialogHeadingTv: TextView
+    private lateinit var actionDialogHeadingEtv: EditText
+    private lateinit var actionDialogScannedBtn: Button
     private lateinit var segmentedControl: SegmentedControl<*>
     private var attachBasket = false
     private var scanning = false
-    var segmentSelected = 0
+    var segmentSelected = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_listing)
         woocommerce = getWooCommerce()
+        actionDialogClose = findViewById<ImageView>(R.id.actionDialogClose)
         rvMain = findViewById<RecyclerView>(R.id.rvMain)
+        actionDialog = findViewById<Group>(R.id.actionDialog)
+        actionDialogHeadingTv = findViewById<TextView>(R.id.actionDialogHeadingTv)
+        actionDialogHeadingEtv = findViewById<EditText>(R.id.actionDialogHeadingEtv)
+        actionDialogScannedBtn = findViewById<Button>(R.id.actionDialogScannedBtn)
         headerLL = findViewById<LinearLayout>(R.id.header)
         orderCompleteBtn = findViewById<Button>(R.id.orderCompleteBtn)
         segmentedControl = findViewById<SegmentedControl<*>>(R.id.segmented_control)
+        progressView = findViewById<RelativeLayout>(R.id.progressView)
         segmentedControl.addOnSegmentSelectListener { segmentViewHolder, isSelected, isReselected ->
             if (isSelected && segmentViewHolder.absolutePosition!=segmentSelected) {
+                rvMain.adapter = null
+                progressView.visibility = View.VISIBLE
                 when(segmentViewHolder.absolutePosition){
                     0->{
                         scanning=false
@@ -62,24 +86,101 @@ class ListingActivity : AppCompatActivity(),
                 }
             }
         }
+        Utility.getorderstest(this@ListingActivity)
         orderCompleteBtn.setOnClickListener {
             if(orderCompleteBtn.text.toString().toLowerCase() == "start scanning"){
+                setScanView(0)
                 orderCompleteBtn.text = "Stop Scanning"
                 scanning=true
             }else{
+                setScanView(1)
                 scanning=false
                 orderCompleteBtn.text = "Start Scanning"
             }
         }
+        actionDialogScannedBtn.setOnClickListener {
+            when(scanningProcess){
+                0->{
+                    scanProductOrBasket()
+                }
+                1->{
+                    matchBasketOrAddProduct()
+                }
+                2->{
+                    if(!actionDialogHeadingEtv.text.toString().trim().isNullOrEmpty()){
+                        val scannedCode = actionDialogHeadingEtv.text.toString().trim().lowercase()
+                        if (scannedCode.startsWith("basket")) {
+                            checkBarCode(scannedCode,orderCurrent?.orderNumber?:"")
+                        }else{
+                            Toast.makeText(this@ListingActivity,"Please Scan a Basket!",Toast.LENGTH_LONG).show()
+                        }
+                    }else{
+                        Toast.makeText(this@ListingActivity,"Please Scan Barcode First!",Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+        actionDialogClose.setOnClickListener {
+            actionDialog.visibility = View.GONE
+        }
         segmentedControl.setSelectedSegment(0)
     }
 
+    private fun matchBasketOrAddProduct() {
+        val code = actionDialogHeadingEtv.text.toString().trim()
+        if(code.isNullOrEmpty()){
+            Toast.makeText(this@ListingActivity,"Scanned Basked Code is INVALID",Toast.LENGTH_LONG).show()
+        }else{
+            var orderNumbers = getProductsFromOrder(0,"-1") as String
+            Utility.checkBasketInOrders(code,this@ListingActivity).observe(this,{checkProds->
+                if(checkProds.isNullOrEmpty()){
+                    Toast.makeText(this@ListingActivity,"Basket scanned is Not attached to order.",Toast.LENGTH_LONG).show()
+                }else{
+                    val product = getProductsFromOrder(1,"-1") as Product
+                    product.remaining++
+                    product.basketId = code
+                    for(temp in checkProds){
+                        if(!temp.orderId.isNullOrEmpty() && orderNumbers.contains(temp.orderId)){
+                            Utility.addProductToBaskedAndDatabase(product.toProductItemEntity(),
+                                this@ListingActivity)
+                            Toast.makeText(this@ListingActivity,"Product Added Successfully!",Toast.LENGTH_LONG).show()
+                            return@observe
+                        }
+                    }
+                }
+            })
+        }
+    }
+    private fun getProductsFromOrder(tag:Int,orderId: String) : Any{
+        when(tag) {
+            0 -> {
+                var orderNumbers = ""
+                for(temp in recentsProductsList){
+                    orderNumbers += if(orderNumbers.isEmpty()){
+                        temp.orderId
+                    }else{
+                        ",${temp.orderId}"
+                    }
+                }
+                return orderNumbers
+            }
+            1 -> {
+                for(temp in recentsProductsList){
+                    if(temp.orderId?:"0" == orderId){
+                        return temp
+                    }
+                }
+            }
+        }
+        return ""
+    }
     private fun setRequest(list: List<Any>) {
         headerLL.visibility = View.GONE
         orderCompleteBtn.text = "Start Scanning"
         orderCompleteBtn.visibility = View.GONE
         val adapter = ProductsAdapter(this, list as ArrayList,0,this@ListingActivity)
         rvMain.layoutManager = LinearLayoutManager(this)
+        progressView.visibility = View.GONE
         rvMain.adapter = adapter
     }
 
@@ -96,6 +197,7 @@ class ListingActivity : AppCompatActivity(),
                     orderCompleteBtn.visibility = View.GONE
                     val adapter = ProductsAdapter(this, listing,2,this@ListingActivity)
                     rvMain.layoutManager = LinearLayoutManager(this)
+                    progressView.visibility = View.GONE
                     rvMain.adapter = adapter
                 }
             }
@@ -115,15 +217,24 @@ class ListingActivity : AppCompatActivity(),
                     orderCompleteBtn.visibility = View.VISIBLE
                     val adapter = ProductsAdapter(this, listing,1,this@ListingActivity)
                     rvMain.layoutManager = LinearLayoutManager(this)
+                    progressView.visibility = View.GONE
                     rvMain.adapter = adapter
                 }
             }
         })
     }
 
-    fun checkBarCode(barcode: String,orderNumber:Int){
+    fun checkBarCode(barcode: String,orderNumber:String){
         recentCode=barcode
-        Utility.checkBarCode(recentCode,orderNumber)
+        Utility.checkBarCode(recentCode,this@ListingActivity).observe(this,{basketOrders->
+            if(basketOrders.isNullOrEmpty()){
+                Utility.addBasektToOrder(recentCode,orderNumber,this@ListingActivity)
+                Toast.makeText(this@ListingActivity,"Basket Added Successfully!",Toast.LENGTH_LONG).show()
+                actionDialog.visibility= View.GONE
+            }else{
+                Toast.makeText(this@ListingActivity,"Basket Already Attached!",Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
     fun getWooCommerce(): Woocommerce {
@@ -144,6 +255,7 @@ class ListingActivity : AppCompatActivity(),
 
         val filter = OrderFilter()
         filter.setAccepted(tag)
+        filter.setStatus("processing,pending")
         val test = woocommerce!!.OrderRepository().myOrders(filter)
 
         test.enqueue(object : Callback<List<MyOrder>> {
@@ -180,6 +292,13 @@ class ListingActivity : AppCompatActivity(),
 
     private fun setOrders(context: Context, list: List<MyOrder>) {
         Utility.addOrders(context,list)
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                runOnUiThread {
+                    setOrdersFromDb()
+                }
+            }
+        }, 2000)
     }
 
     override fun onAccept(order: MyOrder) {
@@ -187,11 +306,34 @@ class ListingActivity : AppCompatActivity(),
     }
 
     override fun AttachBasket(model: com.martoo.picker.models.Order) {
-
+        orderCurrent = model
+        setScanView(2)
     }
 
+    private fun setScanView(tag: Int) {
+        actionDialog.visibility = View.VISIBLE
+        when(tag){
+            0->{
+                scanningProcess = 0
+                actionDialogHeadingTv.text = "Scan Product Barcode"
+            }
+            1->{
+                scanningProcess = 1
+                actionDialogHeadingTv.text = "Sca Basket for Product"
+            }
+            2->{
+                scanningProcess = 2
+                actionDialogHeadingTv.text = "Scan Basket QR Code"
+            }
+            else->{
+                scanningProcess = 3
+            }
+        }
+    }
+
+
     override fun openOrderDetails(id: String) {
-        
+        startActivity(Intent(this@ListingActivity,OrderDetailsActivity::class.java).putExtra("order_id",id))
     }
 
     private fun updateOrder(orderTemp: MyOrder) {
@@ -205,7 +347,7 @@ class ListingActivity : AppCompatActivity(),
             meta.value = "1"
             val meta1 = Metadata()
             meta1.key = "accepted_by"
-            meta1.value = "1"
+            meta1.value = SharedPrefHelper.readInteger(this@ListingActivity,Constant.user_id)
             order.meta_data.add(meta)
             order.meta_data.add(meta1)
             val call = woocommerce.OrderRepository().update(orderTemp.id, order)
@@ -217,6 +359,7 @@ class ListingActivity : AppCompatActivity(),
 //                    ProgressView.getInstance().dismissDialog()
                     if (response.code() == 200) {
                         Utility.addOrder(this@ListingActivity,orderTemp)
+                        setView(-1)
                     } else {
 
                     }
@@ -228,6 +371,23 @@ class ListingActivity : AppCompatActivity(),
             })
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    fun scanProductOrBasket() {
+        val code = actionDialogHeadingEtv.text.toString().trim()
+        recentProductCode = code
+        if(code.isNullOrEmpty()){
+            Toast.makeText(this@ListingActivity,"Scaned Product Code is INVALID",Toast.LENGTH_LONG).show()
+        }else{
+            Utility.checkProductRequired(code,this@ListingActivity).observe(this,{checkProds->
+                recentsProductsList = checkProds
+                if(checkProds.isNullOrEmpty()){
+                    Toast.makeText(this@ListingActivity,"Invalid Product Scanned. Either full or not needed.",Toast.LENGTH_LONG).show()
+                }else{
+                    setScanView(1)
+                }
+            })
         }
     }
 }

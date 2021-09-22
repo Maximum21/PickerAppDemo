@@ -7,12 +7,16 @@ import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.lifecycle.LiveData
-import com.martoo.picker.ui.ListingActivity
-import com.woocom.models.MyOrder
+import com.martoo.picker.entities.ProductItemEntity
+import com.martoo.picker.models.Basket
 import com.martoo.picker.models.Order
 import com.martoo.picker.models.Product
 import com.martoo.picker.repo.RoomOrdersRepository
-import java.lang.Exception
+import com.martoo.picker.ui.ListingActivity
+import com.woocom.Woocommerce
+import com.woocom.Woocommerce.Companion.API_V3
+import com.woocom.models.MyOrder
+import java.util.*
 
 object Utility {
 
@@ -23,6 +27,17 @@ object Utility {
         return instance
     }
 
+    fun getWooCommerce(token:String?): Woocommerce? {
+        return token?.let {
+            Woocommerce.Builder()
+                .setSiteUrl(Config.siteUrl)
+                .setApiVersion(API_V3)
+                .setConsumerKey(Config.consumerKey)
+                .setConsumerSecret(Config.consumerSecret)
+                .setToken(it)
+                .build()
+        }
+    }
     fun isValid(vararg editTexts: TextView): Boolean {
         var isValid = true
         for (edt in editTexts) {
@@ -51,6 +66,12 @@ object Utility {
         }
     }
 
+    fun getorderstest(context: Context){
+        val repository = RoomOrdersRepository(context)
+        repository.testorders().observe(context as ListingActivity,{
+            Log.e("testingorserd","=="+it.size)
+        })
+    }
     fun addOrder(context: Context, order: MyOrder) {
         try {
             val repository = RoomOrdersRepository(context)
@@ -78,7 +99,7 @@ object Utility {
                     product.productCode = tempProduct.barcode
                     product.product_sku = tempProduct.sku
                     product.quantity = tempProduct.quantity
-                    product.remaining = tempProduct.quantity
+                    product.remaining = 0
                     return@map product
                 })
             }
@@ -100,6 +121,9 @@ object Utility {
     fun getOrders(context: Context): LiveData<List<Order>> {
         return RoomOrdersRepository(context).orders()
     }
+    fun getProducts(context: Context,id: String): LiveData<List<Product>> {
+        return RoomOrdersRepository(context).orders(id)
+    }
     fun getProducts(context: Context): LiveData<List<Product>> {
        return RoomOrdersRepository(context).products()
     }
@@ -118,7 +142,7 @@ object Utility {
                     product.productCode = tempProduct.barcode
                     product.product_sku = tempProduct.sku
                     product.quantity = tempProduct.quantity
-                    product.remaining = tempProduct.quantity
+                    product.remaining = 0
                     return@map product
                 })
             }
@@ -127,7 +151,43 @@ object Utility {
         }
     }
 
-    fun checkBarCode(recentCode: String, orderNumber: Int) {
-
+    fun checkBarCode(recentCode: String,context: Context): LiveData<List<Basket>> {
+        val repository = RoomOrdersRepository(context)
+        return repository.ordersContainingBasket(recentCode)
     }
+
+    fun addBasektToOrder(recentCode: String, orderNumber: String, context: Context) {
+        val repository = RoomOrdersRepository(context)
+        return repository.addBasketToOrder(recentCode,orderNumber)
+    }
+
+    fun checkProductRequired(code: String, context: Context): LiveData<List<Product>> {
+        val repository = RoomOrdersRepository(context)
+        return repository.checkProductRequired(code)
+    }
+
+    fun checkBasketInOrders(code: String, context: Context): LiveData<List<Basket>> {
+        val repository = RoomOrdersRepository(context)
+        return repository.checkBasketInOrders(code)
+    }
+
+    fun checkBasketInOrders(code: String,orderId: String, context: Context): LiveData<List<Basket>> {
+        val repository = RoomOrdersRepository(context)
+        return repository.checkBasketInOrders(code,orderId)
+    }
+
+    fun addProductToBaskedAndDatabase(
+        remaining:ProductItemEntity,
+        context: Context
+    ) {
+        val repository = RoomOrdersRepository(context)
+        return repository.addProductToBaskedAndDatabase(remaining)
+    }
+
+    fun checkProductRequired(code: String, orderId: String, context: Context): LiveData<List<Product>> {
+        val repository = RoomOrdersRepository(context)
+        return repository.checkProductRequired(code,orderId)
+    }
+
+
 }

@@ -30,7 +30,7 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
 
                 if (SharedPrefHelper.readString(context, Constant.token) != null) {
-                    startActivity(new Intent(context, MainActivity.class));
+                    startActivity(new Intent(context, ListingActivity.class));
                 } else
                     startActivity(new Intent(context, LoginActivity.class));
                 finish();

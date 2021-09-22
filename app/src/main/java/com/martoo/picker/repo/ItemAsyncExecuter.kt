@@ -2,10 +2,8 @@ package com.martoo.picker.repo
 
 import android.os.AsyncTask
 import com.martoo.picker.database.AppDatabase
-import com.martoo.picker.entities.OrderItemEntitiy
-import com.martoo.picker.entities.ProductItemEntity
-import com.martoo.picker.entities.toOrderItemEntity
-import com.martoo.picker.entities.toProductItemEntity
+import com.martoo.picker.entities.*
+import com.martoo.picker.models.Basket
 import com.martoo.picker.models.Order
 import com.martoo.picker.models.Product
 
@@ -45,6 +43,20 @@ AsyncTask<Void, Void, Long?>() {
     override fun doInBackground(vararg voids: Void): Long? {
         appDatabase.productItemDao()
             .insert(products)
+        return 1
+    }
+}
+
+class InsertBasketToOrder(
+    private val appDatabase: AppDatabase,
+    private val barcode: String,
+    private val orderNumber:String
+) :
+AsyncTask<Void, Void, Long?>() {
+
+    override fun doInBackground(vararg voids: Void): Long? {
+        val entitiy = Basket(0,barcode,orderNumber)
+        appDatabase.basketItemDao().insert(entitiy.toBasketItemEntity())
         return 1
     }
 }

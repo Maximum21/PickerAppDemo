@@ -20,6 +20,7 @@
             android:src="@drawable/ic_top" />
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/img_back"
             android:layout_width="@dimen/_35sdp"
             android:layout_height="@dimen/_35sdp"

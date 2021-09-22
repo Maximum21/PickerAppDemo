@@ -26,10 +26,6 @@ class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType
             acceptTv.setOnClickListener {
                 view.onAccept(model)
             }
-
-            itemView.setOnClickListener{
-                view.openOrderDetails(model.orderNumber)
-            }
         }
     }
 
@@ -56,6 +52,9 @@ class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType
             acceptTv.text = "Attach Basket"
             acceptTv.setOnClickListener {
                 view.AttachBasket(model)
+            }
+            itemView.setOnClickListener{
+                view.openOrderDetails(model.orderNumber)
             }
         }
     }

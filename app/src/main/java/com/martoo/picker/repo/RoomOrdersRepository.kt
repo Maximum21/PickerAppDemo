@@ -7,10 +7,9 @@ import androidx.room.Room
 import com.martoo.picker.*
 import com.martoo.picker.database.AppDatabase
 import com.martoo.picker.entities.*
+import com.martoo.picker.models.Basket
 import com.martoo.picker.models.Order
 import com.martoo.picker.models.Product
-import java.util.*
-import java.util.logging.Handler
 
 class RoomOrdersRepository(val context: Context) {
 
@@ -23,6 +22,7 @@ class RoomOrdersRepository(val context: Context) {
 
         InsertOrder(appDatabase, order).execute()
     }
+
     fun addOrdersToDb(context: Context, orders: List<Order>) {
 
         (InsertOrders(appDatabase, orders.map { order -> order.toOrderItemEntity() }).execute())
@@ -70,10 +70,54 @@ class RoomOrdersRepository(val context: Context) {
         ) { it.map { productItemEntity -> productItemEntity.toProduct() }
         }
     }
+    fun testorders(): LiveData<List<Any>> {
+        return appDatabase.orderItemDao().itemss()
+    }
 
     fun orders(): LiveData<List<Order>> {
         return Transformations.map(appDatabase.orderItemDao().items()) {
                 it.map { orderItemEntity -> orderItemEntity.toOrder() }
             }
+    }
+    fun orders(id:String): LiveData<List<Product>> {
+        return Transformations.map(appDatabase.productItemDao().items(id)) {
+            it.map { productItemEntity -> productItemEntity.toProduct() }
+        }
+    }
+    fun ordersContainingBasket(barcode: String): LiveData<List<Basket>> {
+        return Transformations.map(appDatabase.basketItemDao().itemsWithBasket(barcode)) {
+                it.map { basketItemEntity -> basketItemEntity.toBasket() }
+            }
+    }
+
+    fun addBasketToOrder(recentCode: String, orderNumber: String) {
+        (InsertBasketToOrder(appDatabase, recentCode,orderNumber).execute())
+    }
+
+    fun checkProductRequired(code: String): LiveData<List<Product>> {
+        return Transformations.map(appDatabase.productItemDao().checkProductRequired(code)) {
+            it.map { productItemEntity -> productItemEntity.toProduct() }
+        }
+    }
+    fun checkProductRequired(code: String,orderId: String): LiveData<List<Product>> {
+        return Transformations.map(appDatabase.productItemDao().checkProductRequired(code,orderId)) {
+            it.map { productItemEntity -> productItemEntity.toProduct() }
+        }
+    }
+
+    fun checkBasketInOrders(code: String): LiveData<List<Basket>> {
+        return Transformations.map(appDatabase.basketItemDao().checkBasketInOrders(code)) {
+            it.map { basketItemEntity -> basketItemEntity.toBasket() }
+        }
+    }
+
+    fun checkBasketInOrders(code: String,orderId: String): LiveData<List<Basket>> {
+        return Transformations.map(appDatabase.basketItemDao().checkBasketInOrders(code,orderId)) {
+            it.map { basketItemEntity -> basketItemEntity.toBasket() }
+        }
+    }
+
+    fun addProductToBaskedAndDatabase(remaining: ProductItemEntity) {
+        update(remaining.toProduct())
     }
 }
