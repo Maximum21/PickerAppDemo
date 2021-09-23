@@ -78,8 +78,6 @@ public class LoginActivity extends AppCompatActivity {
                         addToSharePreferences(context, user);
                         SharedPrefHelper.writeString(context, Constant.email, username);
                         getCustomer(context);
-                        startActivity(new Intent(context, ListingActivity.class));
-                        finish();
                     } else {
                         Toast.makeText(context, "Not Valid", Toast.LENGTH_SHORT).show();
                     }
@@ -145,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                         Customer customer = response.body().get(0);
 
                         SharedPrefHelper.writeString(context, Constant.user_display_name, customer.firstName + " " + customer.lastName);
-                        SharedPrefHelper.writeInteger(context, Constant.user_id, customer.getId());
+                        SharedPrefHelper.writeString(context, Constant.user_id, String.valueOf(customer.getId()));
                         SharedPrefHelper.writeString(context, Constant.f_name, customer.getFirstName());
                         SharedPrefHelper.writeString(context, Constant.l_name, customer.getLastName());
                         SharedPrefHelper.writeString(context, Constant.mobile, customer.getBillingAddress().getPhone());
@@ -157,7 +155,8 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             }
                         }
-
+                        startActivity(new Intent(context, ListingActivity.class));
+                        finish();
                     } else {
                         Toast.makeText(context, R.string.login_permission_message, Toast.LENGTH_LONG).show();
                         ((AppCompatActivity) context).finish();

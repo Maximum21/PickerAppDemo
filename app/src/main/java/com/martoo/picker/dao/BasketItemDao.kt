@@ -22,6 +22,9 @@ interface BasketItemDao {
     @Delete
     fun delete(category: BasketItemEntity?)
 
+    @Query("DELETE FROM baskets WHERE order_id = :orderId")
+    fun delete(orderId: String)
+
     @Query("DELETE FROM baskets")
     fun deleteAll()
 

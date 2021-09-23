@@ -72,6 +72,21 @@ class UpdateCartItem(
     }
 }
 
+
+class RemoveCompletedOrder(
+    private val appDatabase: AppDatabase,
+    private val orderId: String
+) :
+    AsyncTask<Void, Void, Long?>() {
+
+    override fun doInBackground(vararg voids: Void): Long? {
+        appDatabase.orderItemDao().delete(orderId)
+        appDatabase.basketItemDao().delete(orderId)
+        appDatabase.productItemDao().delete(orderId)
+        return 0
+    }
+}
+
 class DeleteCartItem(
     private val appDatabase: AppDatabase,
     private val product: Product

@@ -19,6 +19,7 @@ class OrderFilter : ListFilter() {
         }
 
     internal lateinit var status: String
+    internal lateinit var accepted_by: String
 
     internal var customer: Int = 0
     internal var filter: Int = -1
@@ -48,6 +49,11 @@ class OrderFilter : ListFilter() {
         this.filter = customer
 
         addFilter("accepted", customer)
+    }
+    fun setAcceptedBy(customer: String) {
+        this.accepted_by = customer
+
+        addFilter("accepted_by", customer)
     }
 
     fun getProduct(): Int {

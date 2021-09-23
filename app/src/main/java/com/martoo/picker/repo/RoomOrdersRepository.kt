@@ -1,14 +1,17 @@
 package com.martoo.picker.repo
 
 import android.content.Context
+import android.webkit.JsPromptResult
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.room.Room
+import com.google.gson.JsonObject
 import com.martoo.picker.*
 import com.martoo.picker.database.AppDatabase
 import com.martoo.picker.entities.*
 import com.martoo.picker.models.Basket
 import com.martoo.picker.models.Order
+import com.martoo.picker.models.ParentOrder
 import com.martoo.picker.models.Product
 
 class RoomOrdersRepository(val context: Context) {
@@ -70,7 +73,7 @@ class RoomOrdersRepository(val context: Context) {
         ) { it.map { productItemEntity -> productItemEntity.toProduct() }
         }
     }
-    fun testorders(): LiveData<List<Any>> {
+    fun testorders(): LiveData<List<OrderItemEntitiy>> {
         return appDatabase.orderItemDao().itemss()
     }
 
@@ -79,6 +82,10 @@ class RoomOrdersRepository(val context: Context) {
                 it.map { orderItemEntity -> orderItemEntity.toOrder() }
             }
     }
+    fun ordersNew(): LiveData<List<ParentOrder>> {
+        return appDatabase.orderItemDao().itemsNew()
+    }
+
     fun orders(id:String): LiveData<List<Product>> {
         return Transformations.map(appDatabase.productItemDao().items(id)) {
             it.map { productItemEntity -> productItemEntity.toProduct() }
@@ -119,5 +126,9 @@ class RoomOrdersRepository(val context: Context) {
 
     fun addProductToBaskedAndDatabase(remaining: ProductItemEntity) {
         update(remaining.toProduct())
+    }
+
+    fun removeCompletedOrder(orderId: String) {
+        RemoveCompletedOrder(appDatabase,orderId).execute()
     }
 }

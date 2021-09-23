@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.martoo.picker.entities.toOrder
+import com.martoo.picker.entities.toProduct
 import com.martoo.picker.interfaces.ListingView
 import com.martoo.picker.models.Order
+import com.martoo.picker.models.ParentOrder
 import com.martoo.picker.models.Product
 import com.woocom.models.MyOrder
 
@@ -47,14 +50,57 @@ class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType
         var title: TextView = itemView.findViewById(R.id.titleOrder)
         var acceptTv: TextView = itemView.findViewById(R.id.acceptTv)
         fun bind(position: Int) {
-            val model = list[position] as Order
-            title.text = model.orderNumber
-            acceptTv.text = "Attach Basket"
-            acceptTv.setOnClickListener {
-                view.AttachBasket(model)
+            val model = list[position] as ParentOrder
+            var check =false
+            var order: Order? = null
+            var basketStr = ""
+            model.baskets?.let{baskets->
+                for(temp in baskets){
+                    basketStr += if(basketStr.isNullOrEmpty()){
+                        temp.basket_code
+                    }else{
+                        ",${temp.basket_code}"
+                    }
+                }
+
             }
-            itemView.setOnClickListener{
-                view.openOrderDetails(model.orderNumber)
+            model?.order?.let{orderEntity->
+                order = orderEntity.toOrder()
+                if (basketStr.isNotEmpty()) {
+                    title.text = order?.orderNumber+"($basketStr)"
+                }else{
+                    title.text = order?.orderNumber
+                }
+            }
+            model?.products?.let{productEntities->
+                val products = productEntities.map { it.toProduct() }
+                if(products.isNotEmpty()){
+                    check = true
+                }
+                for(temp in products){
+                    if(temp.quantity!=temp.remaining){
+                        check=false
+                        break
+                    }
+                }
+            }
+            if(check){
+                acceptTv.text = "Completed"
+            }else{
+                acceptTv.text = "Attach Basket"
+            }
+
+            acceptTv.setOnClickListener {
+                if(acceptTv.text.toString().lowercase() == "completed"){
+                    view.completeOrder(model,position)
+                }else{
+                    order?.let{
+                        view.AttachBasket(it)
+                    }
+                }
+            }
+            order?.order_id?.let{myOrderId->
+                itemView.setOnClickListener { view.openOrderDetails(myOrderId) }
             }
         }
     }
@@ -94,5 +140,12 @@ class ProductsAdapter(var context: Context,var list: ArrayList<Any>,var viewType
 
     override fun getItemViewType(position: Int): Int {
         return viewType
+    }
+
+    fun removeItem(position: Int) {
+        if(list.size>position){
+            list.removeAt(position)
+            notifyItemRemoved(position)
+        }
     }
 }

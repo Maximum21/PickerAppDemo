@@ -3,6 +3,7 @@ package com.martoo.picker.entities
 import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.martoo.picker.models.Order
 
@@ -15,7 +16,7 @@ data class OrderItemEntitiy (
     @NonNull
     @PrimaryKey
     @ColumnInfo(name = "order_number")
-    var orderNumber: String,
+    var orderNumber: String="",
 
     @ColumnInfo(name = "status")
     var status: String? = null,
@@ -28,10 +29,10 @@ data class OrderItemEntitiy (
 
 
     @ColumnInfo(name = "basketId")
-    var basketId: String? = null,
-
-    var completed: Int
-)
+    var basketId: String? = null
+){
+    @Ignore var completed: Int = 0
+}
 
 fun Order.toOrderItemEntity() = OrderItemEntitiy(
     order_id = this.order_id,
@@ -48,5 +49,6 @@ fun OrderItemEntitiy.toOrder() = Order(
     status = this.status,
     order_total = this.order_total,
     type = this.type,
-    basketId = this.basketId
+    basketId = this.basketId,
+    completed = this.completed
 )

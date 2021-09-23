@@ -11,6 +11,7 @@
     android:orientation="horizontal"
     android:layout_height="40dp">
 <TextView
+    android:maxLines="2"
     android:id="@+id/titleOrder"
     android:gravity="center_vertical"
     android:textSize="14sp"

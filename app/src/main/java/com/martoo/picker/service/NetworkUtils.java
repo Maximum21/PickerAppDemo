@@ -84,9 +84,9 @@ public class NetworkUtils {
         bodyParams.setJsonObjectBody(obj);
 
         bodyParams.asString().setCallback((e, result) -> {
-            progressDialog.dismiss();
             try {
                 if (e != null) {
+                    progressDialog.dismiss();
                     SharedPrefHelper.clearAll(context);
                     showError(context);
                 } else {
@@ -96,6 +96,7 @@ public class NetworkUtils {
                     }
                 }
             } catch (Exception ex) {
+                progressDialog.dismiss();
                 ex.printStackTrace();
             }
         });

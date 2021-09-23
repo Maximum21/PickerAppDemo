@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData
 import com.martoo.picker.entities.ProductItemEntity
 import com.martoo.picker.models.Basket
 import com.martoo.picker.models.Order
+import com.martoo.picker.models.ParentOrder
 import com.martoo.picker.models.Product
 import com.martoo.picker.repo.RoomOrdersRepository
 import com.martoo.picker.ui.ListingActivity
@@ -68,8 +69,8 @@ object Utility {
 
     fun getorderstest(context: Context){
         val repository = RoomOrdersRepository(context)
-        repository.testorders().observe(context as ListingActivity,{
-            Log.e("testingorserd","=="+it.size)
+        repository.ordersNew().observe(context as ListingActivity,{
+            Log.e("testingorserd","=="+it)
         })
     }
     fun addOrder(context: Context, order: MyOrder) {
@@ -96,7 +97,11 @@ object Utility {
                     product.orderId = order.orderNumber
                     product.productId = tempProduct.productId.toString()
                     product.name = tempProduct.name
-                    product.productCode = tempProduct.barcode
+                    if(tempProduct.barcode.isNullOrEmpty()){
+                        product.productCode = tempProduct.productId.toString()+item.orderNumber
+                    }else{
+                        product.productCode = tempProduct.barcode
+                    }
                     product.product_sku = tempProduct.sku
                     product.quantity = tempProduct.quantity
                     product.remaining = 0
@@ -118,8 +123,8 @@ object Utility {
         return order
     }
 
-    fun getOrders(context: Context): LiveData<List<Order>> {
-        return RoomOrdersRepository(context).orders()
+    fun getOrders(context: Context): LiveData<List<ParentOrder>> {
+        return RoomOrdersRepository(context).ordersNew()
     }
     fun getProducts(context: Context,id: String): LiveData<List<Product>> {
         return RoomOrdersRepository(context).orders(id)
@@ -139,7 +144,11 @@ object Utility {
                     product.orderId = order.orderNumber
                     product.productId = tempProduct.productId.toString()
                     product.name = tempProduct.name
-                    product.productCode = tempProduct.barcode
+                    if(tempProduct.barcode.isNullOrEmpty()){
+                        product.productCode = tempProduct.productId.toString()+item.orderNumber
+                    }else{
+                        product.productCode = tempProduct.barcode
+                    }
                     product.product_sku = tempProduct.sku
                     product.quantity = tempProduct.quantity
                     product.remaining = 0
@@ -187,6 +196,11 @@ object Utility {
     fun checkProductRequired(code: String, orderId: String, context: Context): LiveData<List<Product>> {
         val repository = RoomOrdersRepository(context)
         return repository.checkProductRequired(code,orderId)
+    }
+
+    fun removeCompletedOrderFromDb(context: Context,orderId: String) {
+        val repository = RoomOrdersRepository(context)
+        repository.removeCompletedOrder(orderId)
     }
 
 

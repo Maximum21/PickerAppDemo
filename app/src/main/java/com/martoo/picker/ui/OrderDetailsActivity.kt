@@ -14,6 +14,7 @@ import com.martoo.picker.R
 import com.martoo.picker.Utility
 import com.martoo.picker.entities.toProductItemEntity
 import com.martoo.picker.models.Order
+import com.martoo.picker.models.ParentOrder
 import com.martoo.picker.models.Product
 import com.woocom.models.MyOrder
 
@@ -49,7 +50,8 @@ class OrderDetailsActivity : AppCompatActivity(),
             if (completeBtn.text.toString().trim().lowercase() == "order completed") {
                 callOrderComplete()
             }else{
-                actionDialog.visibility == View.VISIBLE
+                setScanView(0)
+                actionDialog.visibility = View.VISIBLE
             }
         }
         actionDialogClose.setOnClickListener { actionDialog.visibility = View.GONE }
@@ -101,16 +103,28 @@ class OrderDetailsActivity : AppCompatActivity(),
 
     }
 
+    override fun completeOrder(model: ParentOrder, position: Int) {
+
+    }
+
     private fun setOrdersFromDb(id: String) {
+        var check=false
         Utility.getProducts(this@OrderDetailsActivity,id).observe(this,{ orders->
             orders?.let{
                 if(orders.isNotEmpty()){
                     val listing = ArrayList<Any>()
                     for(temp in  orders){
                         listing.add(temp)
+                        if(temp.quantity>temp.remaining){
+                            check=true
+                        }
                     }
-                    headerLL.visibility = View.GONE
-                    completeBtn.text = "Start Scanning"
+                    if (check) {
+                        completeBtn.visibility=View.VISIBLE
+                        completeBtn.text = "Start Scanning"
+                    }else{
+                        completeBtn.visibility=View.GONE
+                    }
                     val adapter = ProductsAdapter(this, listing,1,this@OrderDetailsActivity)
                     rvMain.layoutManager = LinearLayoutManager(this)
                     rvMain.adapter = adapter
@@ -137,7 +151,6 @@ class OrderDetailsActivity : AppCompatActivity(),
     }
 
     private fun setScanView(tag: Int) {
-        actionDialog.visibility = View.VISIBLE
         when(tag){
             0->{
                 scanningProcess = 0
@@ -145,7 +158,7 @@ class OrderDetailsActivity : AppCompatActivity(),
             }
             1->{
                 scanningProcess = 1
-                actionDialogHeadingTv.text = "Sca Basket for Product"
+                actionDialogHeadingTv.text = "Scan Basket for Product"
             }
             2->{
                 scanningProcess = 2
@@ -155,6 +168,7 @@ class OrderDetailsActivity : AppCompatActivity(),
                 scanningProcess = 3
             }
         }
+        actionDialog.visibility = View.VISIBLE
     }
 
     private fun matchBasketOrAddProduct() {
@@ -173,6 +187,9 @@ class OrderDetailsActivity : AppCompatActivity(),
                         Utility.addProductToBaskedAndDatabase(product.toProductItemEntity(),
                             this@OrderDetailsActivity)
                         Toast.makeText(this@OrderDetailsActivity,"Product Added Successfully!",Toast.LENGTH_LONG).show()
+                        setOrdersFromDb(orderId)
+                        actionDialogHeadingEtv.setText("")
+                        setScanView(0)
                         checkforOrderComplete()
                         return@observe
 
@@ -196,7 +213,7 @@ class OrderDetailsActivity : AppCompatActivity(),
     private fun getProductsFromOrder(): Product? {
         if (recentsProductsList.isNotEmpty()) {
             for(temp in recentsProductsList){
-                if((temp.productCode?:"".isNotEmpty()) as Boolean && temp.productCode?:"" == recentProductCode){
+                if(!temp?.productCode.isNullOrEmpty() && temp.productCode?:"" == recentProductCode ){
                     return temp
                 }
             }
