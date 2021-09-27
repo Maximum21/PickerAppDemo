@@ -28,6 +28,10 @@ interface OrderItemDao {
     fun itemsNew(): LiveData<List<ParentOrder>>
 
     @Transaction
+    @Query("SELECT * FROM orders WHERE order_number = :orderId ORDER BY order_id asc")
+    fun itemsNew(orderId: String): LiveData<List<ParentOrder>>
+
+    @Transaction
     @Query("SELECT o.order_id,o.order_number,o.status,o.type,o.basketId,o.order_total, (SELECT Count(p.orderId) From products WHERE p.quantity != p.remaining AND o.order_id = p.orderId) as completed FROM orders o ,products p ORDER BY order_id asc")
     fun itemss(): LiveData<List<OrderItemEntitiy>>
 

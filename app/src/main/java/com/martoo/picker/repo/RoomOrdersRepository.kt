@@ -86,6 +86,10 @@ class RoomOrdersRepository(val context: Context) {
         return appDatabase.orderItemDao().itemsNew()
     }
 
+    fun ordersNew(orderId: String): LiveData<List<ParentOrder>> {
+        return appDatabase.orderItemDao().itemsNew(orderId)
+    }
+
     fun orders(id:String): LiveData<List<Product>> {
         return Transformations.map(appDatabase.productItemDao().items(id)) {
             it.map { productItemEntity -> productItemEntity.toProduct() }

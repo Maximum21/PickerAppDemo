@@ -67,12 +67,6 @@ object Utility {
         }
     }
 
-    fun getorderstest(context: Context){
-        val repository = RoomOrdersRepository(context)
-        repository.ordersNew().observe(context as ListingActivity,{
-            Log.e("testingorserd","=="+it)
-        })
-    }
     fun addOrder(context: Context, order: MyOrder) {
         try {
             val repository = RoomOrdersRepository(context)
@@ -82,7 +76,6 @@ object Utility {
             orders.observe(context as ListingActivity, { myOrders ->
                 myOrders?.let {
                     if (it.isNotEmpty()) {
-                        Log.e("testingorders", "====${it.size}")
                         check =
                             it.filter { orderTemp -> orderTemp.orderNumber == order.orderNumber }
 
@@ -125,6 +118,10 @@ object Utility {
 
     fun getOrders(context: Context): LiveData<List<ParentOrder>> {
         return RoomOrdersRepository(context).ordersNew()
+    }
+
+    fun getOrders(context: Context,orderId: String): LiveData<List<ParentOrder>> {
+        return RoomOrdersRepository(context).ordersNew(orderId)
     }
     fun getProducts(context: Context,id: String): LiveData<List<Product>> {
         return RoomOrdersRepository(context).orders(id)
@@ -202,6 +199,18 @@ object Utility {
         val repository = RoomOrdersRepository(context)
         repository.removeCompletedOrder(orderId)
     }
-
+    fun getWooCommerce(context: Context): Woocommerce {
+        val token = SharedPrefHelper.readString(
+            context,
+            Config.token
+        ) ?:""
+        return Woocommerce.Builder()
+            .setSiteUrl(Config.siteUrl)
+            .setApiVersion(API_V3)
+            .setConsumerKey(Config.consumerKey)
+            .setConsumerSecret(Config.consumerSecret)
+            .setToken(token)
+            .build()
+    }
 
 }

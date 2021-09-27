@@ -159,4 +159,16 @@
         android:id="@+id/actionDialogClose"
         android:layout_width="25dp"
         android:layout_height="25dp"/>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:background="#55cccccc"
+        android:id="@+id/progressView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ProgressBar
+            android:layout_centerInParent="true"
+            android:layout_width="70dp"
+            android:layout_height="70dp"/>
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

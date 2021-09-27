@@ -171,10 +171,13 @@
         android:layout_height="25dp"/>
 
     <RelativeLayout
+        android:focusableInTouchMode="true"
+        android:clickable="true"
         android:background="#55cccccc"
         android:id="@+id/progressView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:focusable="true">
         <ProgressBar
             android:layout_centerInParent="true"
             android:layout_width="70dp"

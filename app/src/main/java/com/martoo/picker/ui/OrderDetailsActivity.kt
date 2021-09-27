@@ -12,11 +12,20 @@ import com.martoo.picker.interfaces.ListingView
 import com.martoo.picker.ProductsAdapter
 import com.martoo.picker.R
 import com.martoo.picker.Utility
+import com.martoo.picker.Utility.getWooCommerce
 import com.martoo.picker.entities.toProductItemEntity
 import com.martoo.picker.models.Order
 import com.martoo.picker.models.ParentOrder
 import com.martoo.picker.models.Product
+import com.woocom.Woocommerce
+import com.woocom.models.Metadata
 import com.woocom.models.MyOrder
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.lang.Exception
+import java.util.*
+import kotlin.collections.ArrayList
 
 class OrderDetailsActivity : AppCompatActivity(),
     ListingView {
@@ -33,10 +42,13 @@ class OrderDetailsActivity : AppCompatActivity(),
     private lateinit var actionDialogHeadingEtv: EditText
     private lateinit var actionDialogScannedBtn: Button
     private lateinit var rvMain: RecyclerView
+    private lateinit var woocommerce: Woocommerce
+    private lateinit var progressView: RelativeLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_order_details)
+        woocommerce = Utility.getWooCommerce(this)
         actionDialog = findViewById<Group>(R.id.actionDialog)
         actionDialogClose = findViewById<ImageView>(R.id.actionDialogClose)
         actionDialogHeadingTv = findViewById<TextView>(R.id.actionDialogHeadingTv)
@@ -44,11 +56,12 @@ class OrderDetailsActivity : AppCompatActivity(),
         actionDialogScannedBtn = findViewById<Button>(R.id.actionDialogScannedBtn)
         rvMain = findViewById<RecyclerView>(R.id.rvMain)
         headerLL = findViewById<LinearLayout>(R.id.header)
+        progressView = findViewById<RelativeLayout>(R.id.progressView)
         completeBtn = findViewById<Button>(R.id.orderCompleteBtn)
         setSingleProducts(intent)
         completeBtn.setOnClickListener {
-            if (completeBtn.text.toString().trim().lowercase() == "order completed") {
-                callOrderComplete()
+            if (completeBtn.text.toString().trim().lowercase() == "order completed/close") {
+                completeOrder()
             }else{
                 setScanView(0)
                 actionDialog.visibility = View.VISIBLE
@@ -79,9 +92,6 @@ class OrderDetailsActivity : AppCompatActivity(),
         }
     }
 
-    private fun callOrderComplete() {
-        finish()
-    }
 
     private fun setSingleProducts(intent: Intent) {
         val id = intent.getStringExtra("order_id")
@@ -120,17 +130,20 @@ class OrderDetailsActivity : AppCompatActivity(),
                         }
                     }
                     if (check) {
-                        completeBtn.visibility=View.VISIBLE
                         completeBtn.text = "Start Scanning"
+                        completeBtn.visibility=View.VISIBLE
                     }else{
-                        completeBtn.visibility=View.GONE
+                        completeBtn.text = "Order Completed/Close"
+                        completeBtn.visibility=View.VISIBLE
                     }
                     val adapter = ProductsAdapter(this, listing,1,this@OrderDetailsActivity)
                     rvMain.layoutManager = LinearLayoutManager(this)
                     rvMain.adapter = adapter
                 }
             }
+            checkforOrderComplete()
         })
+
     }
     fun scanProductOrBasket() {
         val code = actionDialogHeadingEtv.text.toString().trim()
@@ -151,6 +164,7 @@ class OrderDetailsActivity : AppCompatActivity(),
     }
 
     private fun setScanView(tag: Int) {
+        actionDialogHeadingEtv.setText("")
         when(tag){
             0->{
                 scanningProcess = 0
@@ -187,10 +201,16 @@ class OrderDetailsActivity : AppCompatActivity(),
                         Utility.addProductToBaskedAndDatabase(product.toProductItemEntity(),
                             this@OrderDetailsActivity)
                         Toast.makeText(this@OrderDetailsActivity,"Product Added Successfully!",Toast.LENGTH_LONG).show()
-                        setOrdersFromDb(orderId)
                         actionDialogHeadingEtv.setText("")
                         setScanView(0)
-                        checkforOrderComplete()
+                        Timer().schedule(object: TimerTask(){
+                            override fun run() {
+                                runOnUiThread{
+                                    setOrdersFromDb(orderId)
+                                }
+                            }
+
+                        },500)
                         return@observe
 
                     }
@@ -205,7 +225,8 @@ class OrderDetailsActivity : AppCompatActivity(),
             if(it.isNullOrEmpty()){
                 orderComplete = true
                 actionDialog.visibility = View.GONE
-                completeBtn.text = "Order Completed"
+                completeBtn.text = "Order Completed/Close"
+                completeBtn.visibility = View.VISIBLE
             }
         })
     }
@@ -220,4 +241,87 @@ class OrderDetailsActivity : AppCompatActivity(),
         }
         return null
     }
+    fun completeOrder() {
+        progressView.visibility = View.VISIBLE
+        Utility.getOrders(this@OrderDetailsActivity,orderId).observe(this,{myOrders->
+            myOrders?.let{parentOrder->
+                if(parentOrder.isNotEmpty()){
+                    var model = parentOrder[0]
+                    var baskets = ""
+                    var orderId = "0"
+                    var orderNumber = "0"
+                    for(temp in model.baskets){
+                        baskets += if(baskets.isEmpty()){
+                            temp.basket_code
+                        }else{
+                            ",${temp.basket_code}"
+                        }
+                    }
+                    model?.order?.let{orderItemEntitiy ->
+                        orderId = orderItemEntitiy.order_id?:"0"
+                        orderNumber = orderItemEntitiy.orderNumber?:"0"
+                    }
+                    updateOrder(orderNumber,orderId,baskets)
+                }else{
+                    runOnUiThread { progressView.visibility = View.GONE }
+                }
+            }
+        })
+    }
+
+    private fun updateOrder(orderNumber: String,orderId: String,baskets:String) {
+        try {
+            progressView.visibility = View.VISIBLE
+//            ProgressView.getInstance().showProgressDialog(this@OrderDetailsActivity)
+            val order = com.woocom.models.Order()
+            order.id = orderId.toInt()
+            order.orderNumber = orderNumber
+            order.status = "on-hold"
+            val meta1 = Metadata()
+            meta1.key = "basket_ids"
+            meta1.value = baskets
+            order.meta_data.add(meta1)
+            val call = woocommerce.OrderRepository().update(orderId.toInt(), order)
+            call.enqueue(object : Callback<com.woocom.models.Order?> {
+                override fun onResponse(call: Call<com.woocom.models.Order?>, response: Response<com.woocom.models.Order?>) {
+//                    ProgressView.getInstance().dismissDialog()
+                    if (response.code() == 200) {
+                        Toast.makeText(
+                            this@OrderDetailsActivity,
+                            response.message(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        Utility.removeCompletedOrderFromDb(this@OrderDetailsActivity,orderNumber)
+                        Timer().schedule(object: TimerTask(){
+                            override fun run() {
+                                runOnUiThread{finish()}
+                            }
+                        },1000)
+                        progressView.visibility = View.GONE
+                    } else {
+                        progressView.visibility = View.GONE
+                        Toast.makeText(
+                            this@OrderDetailsActivity,
+                            response.message(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<com.woocom.models.Order?>, t: Throwable) {
+//                    ProgressView.getInstance().dismissDialog()
+                    Toast.makeText(
+                        this@OrderDetailsActivity,
+                        t.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    progressView.visibility = View.GONE
+                }
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+            progressView.visibility = View.GONE
+        }
+    }
+
 }

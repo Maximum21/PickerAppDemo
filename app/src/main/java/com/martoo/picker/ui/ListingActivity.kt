@@ -54,7 +54,7 @@ class ListingActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_listing)
-        woocommerce = getWooCommerce()
+        woocommerce = Utility.getWooCommerce(this)
         actionDialogClose = findViewById<ImageView>(R.id.actionDialogClose)
         rvMain = findViewById<RecyclerView>(R.id.rvMain)
         actionDialog = findViewById<Group>(R.id.actionDialog)
@@ -71,13 +71,13 @@ class ListingActivity : AppCompatActivity(),
                 progressView.visibility = View.VISIBLE
                 when(segmentViewHolder.absolutePosition){
                     0->{
-                        scanning=false
                         segmentSelected=0
+                        scanning=false
                         setView(-1)
                     }
                     1->{
-                        scanning=false
                         segmentSelected=1
+                        scanning=false
                         setOrdersFromDb()
                         setView(1)
                     }
@@ -199,6 +199,7 @@ class ListingActivity : AppCompatActivity(),
             progressView.visibility = View.GONE
             rvMain.adapter = adapter
         }
+        progressView.visibility = View.GONE
     }
 
     private fun setOrdersFromDb() {
@@ -239,8 +240,14 @@ class ListingActivity : AppCompatActivity(),
                         rvMain.layoutManager = LinearLayoutManager(this)
                         progressView.visibility = View.GONE
                         rvMain.adapter = adapter
+                    }else{
+                        progressView.visibility = View.GONE
                     }
+                }else{
+                    progressView.visibility = View.GONE
                 }
+            }?: run{
+                progressView.visibility = View.GONE
             }
         })
     }
@@ -252,27 +259,15 @@ class ListingActivity : AppCompatActivity(),
                 Utility.addBasektToOrder(recentCode,orderNumber,this@ListingActivity)
                 Toast.makeText(this@ListingActivity,"Basket Added Successfully!",Toast.LENGTH_LONG).show()
                 actionDialog.visibility= View.GONE
-                setScanView(0)
                 actionDialogHeadingEtv.setText("")
+                setOrdersFromDb()
             }else{
                 Toast.makeText(this@ListingActivity,"Basket Already Attached!",Toast.LENGTH_LONG).show()
             }
         })
     }
 
-    fun getWooCommerce(): Woocommerce {
-        val token = SharedPrefHelper.readString(
-            this,
-            Config.token
-        ) ?:""
-        return Woocommerce.Builder()
-            .setSiteUrl(Config.siteUrl)
-            .setApiVersion(API_V3)
-            .setConsumerKey(Config.consumerKey)
-            .setConsumerSecret(Config.consumerSecret)
-            .setToken(token)
-            .build()
-    }
+
 
     private fun setView(tag: Int) {
         progressView.visibility = View.VISIBLE
@@ -286,15 +281,13 @@ class ListingActivity : AppCompatActivity(),
         }
         filter.setStatus("processing,pending")
         val test = woocommerce!!.OrderRepository().myOrders(filter)
-
         test.enqueue(object : Callback<List<MyOrder>> {
             override fun onResponse(
                 call: Call<List<MyOrder>>,
                 response: Response<List<MyOrder>>
             ) {
                 if (response.code() == 200) {
-                    assert(response.body() != null)
-                    if (response.body()?.isNotEmpty() == true) {
+                    if (response.body() != null && response.body()?.isNotEmpty() == true) {
                         //creating our adapter
                         when(segmentSelected){
                             0->{
@@ -302,12 +295,17 @@ class ListingActivity : AppCompatActivity(),
                             }
                             1->{
                                 setOrders(this@ListingActivity,response.body()!!)
+                            }else->{
+                                progressView.visibility = View.GONE
                             }
                         }
 
+                    }else{
+                        progressView.visibility = View.GONE
                     }
+                }else{
+                    progressView.visibility = View.GONE
                 }
-                progressView.visibility = View.GONE
             }
 
             override fun onFailure(call: Call<List<MyOrder>>, t: Throwable) {
@@ -319,14 +317,16 @@ class ListingActivity : AppCompatActivity(),
     }
 
     private fun setOrders(context: Context, list: List<MyOrder>) {
-        Utility.addOrders(context,list)
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                runOnUiThread {
-                    setOrdersFromDb()
+        if (segmentSelected==1) {
+            Utility.addOrders(context,list)
+            Timer().schedule(object : TimerTask() {
+                override fun run() {
+                    runOnUiThread {
+                        setOrdersFromDb()
+                    }
                 }
-            }
-        }, 2000)
+            }, 2000)
+        }
     }
 
     override fun onAccept(order: MyOrder) {
